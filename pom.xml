@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.gregmarut.support</groupId>
+	<artifactId>test-beangen</artifactId>
+	<version>2.1-SNAPSHOT</version>
+	<name>Bean Property Generator</name>
+	<description>Supports unit testing by dynamically creating bean objects and populating their fields to default values.</description>
+	<url>http://code.google.com/p/java-bean-generator/</url>
+
+	<licenses>
+		<license>
+			<name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://java-bean-generator.googlecode.com/svn/trunk/test-beangen/</url>
+		<connection>scm:svn:https://java-bean-generator.googlecode.com/svn/trunk/test-beangen/</connection>
+		<developerConnection>scm:svn:https://java-bean-generator.googlecode.com/svn/trunk/test-beangen/</developerConnection>
+	</scm>
+
+	<developers>
+		<developer>
+			<name>Greg Marut</name>
+			<email>greg.marut@gmail.com</email>
+		</developer>
+	</developers>
+
+	<properties>
+		<!-- Define the version properties -->
+		<version.slf4j>1.7.7</version.slf4j>
+		<version.junit>4.4</version.junit>
+	</properties>
+
+	<dependencies>
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${version.slf4j}</version>
+		</dependency>
+
+		<!-- JUnit / Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${version.junit}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.java</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>submit</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-repository-plugin</artifactId>
+						<version>2.3.1</version>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
