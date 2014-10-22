@@ -4,9 +4,8 @@
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
- * 
  * Contributors:
- *    Greg Marut - initial API and implementation
+ * Greg Marut - initial API and implementation
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
@@ -27,7 +26,7 @@ import java.util.Set;
  */
 public class InterfaceMapper extends HashMap<Class<?>, Class<?>>
 {
-	//** Finals **//
+	// ** Finals **//
 	private static final long serialVersionUID = -7430365572672661258L;
 	
 	public static final Class<?> DEFAULT_COLLECTION = LinkedList.class;

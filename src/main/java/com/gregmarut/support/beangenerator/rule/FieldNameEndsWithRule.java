@@ -10,8 +10,8 @@ public class FieldNameEndsWithRule<V> extends FieldNameRule<V>
 	@Override
 	public boolean isMatch(final Class<?> clazz, final String name)
 	{
-		//make sure the name is not null
-		if(null != name)
+		// make sure the name is not null
+		if (null != name)
 		{
 			return name.endsWith(pattern);
 		}

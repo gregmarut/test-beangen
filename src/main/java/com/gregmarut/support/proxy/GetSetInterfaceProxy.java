@@ -45,7 +45,7 @@ public class GetSetInterfaceProxy implements InvocationHandler
 	 * Creates a new proxy class for this handler.
 	 * 
 	 * @param interfaces
-	 * Must be interfaces and not classes
+	 *        Must be interfaces and not classes
 	 * @return New proxy classes
 	 */
 	@SuppressWarnings("unchecked")
@@ -61,11 +61,11 @@ public class GetSetInterfaceProxy implements InvocationHandler
 	 * the method
 	 * 
 	 * @param proxy
-	 * The instantiated object used for the interface
+	 *        The instantiated object used for the interface
 	 * @param method
-	 * The method that was invoked
+	 *        The method that was invoked
 	 * @param args
-	 * The arguments passed into the method
+	 *        The arguments passed into the method
 	 * @return Object
 	 */
 	@Override
