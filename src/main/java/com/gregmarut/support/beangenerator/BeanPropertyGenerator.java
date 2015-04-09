@@ -1,11 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2013 Greg Marut.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
- * Contributors:
- * Greg Marut - initial API and implementation
+ * Copyright (c) 2013 Greg Marut. All rights reserved. This program and the accompanying materials are made available
+ * under the terms of the GNU Public License v3.0 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html Contributors: Greg Marut - initial API and implementation
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
@@ -52,14 +48,8 @@ public final class BeanPropertyGenerator
 	// holds the properties for this generator
 	private final Properties properties;
 	
-	// ** Primitives **//
-	// determines whether or not beans should be cached
-	// once they are initialized
-	private final boolean cache;
-	
 	/**
-	 * Constructs a new BeanPropertyGenerator object Bean caching is disabled by
-	 * default
+	 * Constructs a new BeanPropertyGenerator object Bean caching is disabled by default
 	 */
 	public BeanPropertyGenerator()
 	{
@@ -70,19 +60,29 @@ public final class BeanPropertyGenerator
 	 * Constructs a new BeanPropertyGenerator object
 	 * 
 	 * @param cache
-	 *        Determines whether or not to cache beans once they are created
-	 *        for faster performance. Be advised that once caching is
-	 *        enabled, any objects that are created again within the same
-	 *        scope reference the originally created object. If the
-	 *        referenced object was previously modified, all consequent
-	 *        calls return the same modified object.
-	 * @param proxyUnmappedInterfaces
-	 *        Determines if interfaces that have not been mapped should be
-	 *        instantiated using dynamic proxies. These proxies will then
-	 *        generate any objects that are returned from the interfaces
+	 *            Determines whether or not to cache beans once they are created for faster performance. Be advised that
+	 *            once caching is enabled, any objects that are created again within the same scope reference the
+	 *            originally created object. If the referenced object was previously modified, all consequent calls
+	 *            return the same modified object.
 	 */
-	public BeanPropertyGenerator(final boolean cache,
-		final boolean proxyUnmappedInterfaces)
+	public BeanPropertyGenerator(final boolean cache)
+	{
+		this(cache, false);
+	}
+	
+	/**
+	 * Constructs a new BeanPropertyGenerator object
+	 * 
+	 * @param cache
+	 *            Determines whether or not to cache beans once they are created for faster performance. Be advised that
+	 *            once caching is enabled, any objects that are created again within the same scope reference the
+	 *            originally created object. If the referenced object was previously modified, all consequent calls
+	 *            return the same modified object.
+	 * @param proxyUnmappedInterfaces
+	 *            Determines if interfaces that have not been mapped should be instantiated using dynamic proxies. These
+	 *            proxies will then generate any objects that are returned from the interfaces
+	 */
+	public BeanPropertyGenerator(final boolean cache, final boolean proxyUnmappedInterfaces)
 	{
 		this(cache, proxyUnmappedInterfaces, new Properties());
 	}
@@ -91,22 +91,17 @@ public final class BeanPropertyGenerator
 	 * Constructs a new BeanPropertyGenerator object
 	 * 
 	 * @param cache
-	 *        Determines whether or not to cache beans once they are created
-	 *        for faster performance. Be advised that once caching is
-	 *        enabled, any objects that are created again within the same
-	 *        scope reference the originally created object. If the
-	 *        referenced object was previously modified, all consequent
-	 *        calls return the same modified object.
+	 *            Determines whether or not to cache beans once they are created for faster performance. Be advised that
+	 *            once caching is enabled, any objects that are created again within the same scope reference the
+	 *            originally created object. If the referenced object was previously modified, all consequent calls
+	 *            return the same modified object.
 	 * @param proxyUnmappedInterfaces
-	 *        Determines if interfaces that have not been mapped should be
-	 *        instantiated using dynamic proxies. These proxies will then
-	 *        generate any objects that are returned from the interfaces
+	 *            Determines if interfaces that have not been mapped should be instantiated using dynamic proxies. These
+	 *            proxies will then generate any objects that are returned from the interfaces
 	 * @param properties
-	 *        Holds the properties that will determine how this generator
-	 *        will function
+	 *            Holds the properties that will determine how this generator will function
 	 */
-	public BeanPropertyGenerator(final boolean cache,
-		final boolean proxyUnmappedInterfaces, final Properties properties)
+	public BeanPropertyGenerator(final boolean cache, final boolean proxyUnmappedInterfaces, final Properties properties)
 	{
 		// assign the map of bean objects
 		beanCache = new HashMap<Class<?>, Object>();
@@ -119,17 +114,13 @@ public final class BeanPropertyGenerator
 		properties.setInterfaceMapper(new InterfaceMapper());
 		properties.setRuleMapping(new RuleMapping());
 		properties.setProxyUnmappedInterfaces(proxyUnmappedInterfaces);
-		properties
-			.setCollectionAutoFillCount(DEFAULT_COLLECTION_AUTO_FILL_COUNT);
-		
-		// determines whether or not beans should be cached
-		// once they are initialized
-		this.cache = cache;
+		properties.setCollectionAutoFillCount(DEFAULT_COLLECTION_AUTO_FILL_COUNT);
+		properties.setCache(cache);
 	}
 	
 	/**
-	 * Retrieves an object from the map of bean objects. If the object does not
-	 * yet exist in the map, it is initialized and returned
+	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the map, it is initialized
+	 * and returned
 	 * 
 	 * @param clazz
 	 * @return Object
@@ -140,8 +131,8 @@ public final class BeanPropertyGenerator
 	}
 	
 	/**
-	 * Retrieves an object from the map of bean objects. If the object does not
-	 * yet exist in the map, it is initialized and returned
+	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the map, it is initialized
+	 * and returned
 	 * 
 	 * @param clazz
 	 * @param populate
@@ -150,57 +141,28 @@ public final class BeanPropertyGenerator
 	@SuppressWarnings("unchecked")
 	public <T> T get(final Class<T> clazz, final boolean populate)
 	{
-		// holds the object to return
-		T obj = null;
-		
-		// check to see if caching is enabled
-		if (cache)
+		try
 		{
-			logger.debug("Attempting to lookup " + clazz.getName()
-				+ " from the cache.");
-			obj = (T) beanCache.get(clazz);
+			// attempt to initialize the new model object
+			T obj = (T) getBeanPropertyInitializer().initialize(clazz, populate);
+			
+			return obj;
 		}
-		
-		// check to see if this object is null
-		if (null == obj)
+		catch (InstantiationException e)
 		{
-			try
-			{
-				// attempt to initialize the new model object
-				obj = (T) getBeanPropertyInitializer().initialize(clazz,
-					populate);
-				
-				// check to see if caching is enabled
-				if (cache)
-				{
-					logger.debug("Adding " + clazz.getName() + " to the cache");
-					
-					// add this object to the model map
-					beanCache.put(clazz, obj);
-				}
-			}
-			catch (InstantiationException e)
-			{
-				throw new BeanInitializationException(e);
-			}
-			catch (IllegalAccessException e)
-			{
-				throw new BeanInitializationException(e);
-			}
+			throw new BeanInitializationException(e);
 		}
-		else
+		catch (IllegalAccessException e)
 		{
-			logger.debug("Found " + clazz.getName() + " in the cache.");
+			throw new BeanInitializationException(e);
 		}
-		
-		return obj;
 	}
 	
 	/**
 	 * Creates a list and populates it with objects of the specified class type
 	 * 
 	 * @param clazz
-	 *        The class to instantiate
+	 *            The class to instantiate
 	 * @return
 	 */
 	public List<?> getList(final Class<?> clazz)
@@ -212,9 +174,9 @@ public final class BeanPropertyGenerator
 	 * Creates a list and populates it with objects of the specified class type
 	 * 
 	 * @param clazz
-	 *        The class to instantiate
+	 *            The class to instantiate
 	 * @param count
-	 *        How many objects to put into the list
+	 *            How many objects to put into the list
 	 * @return
 	 */
 	public List<?> getList(final Class<?> clazz, final int count)
@@ -247,8 +209,7 @@ public final class BeanPropertyGenerator
 	}
 	
 	/**
-	 * Returns the properties that are associated with this bean property
-	 * generator
+	 * Returns the properties that are associated with this bean property generator
 	 * 
 	 * @return
 	 */
@@ -265,6 +226,6 @@ public final class BeanPropertyGenerator
 	protected final BeanPropertyInitializer getBeanPropertyInitializer()
 	{
 		// create a new instance of the initializer so that it is thread safe.
-		return new BeanPropertyFieldInitializer(properties);
+		return new BeanPropertyFieldInitializer(properties, beanCache);
 	}
 }

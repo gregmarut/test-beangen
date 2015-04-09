@@ -1,16 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013 Greg Marut.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
- * Contributors:
- * Greg Marut - initial API and implementation
+ * Copyright (c) 2013 Greg Marut. All rights reserved. This program and the accompanying materials are made available
+ * under the terms of the GNU Public License v3.0 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html Contributors: Greg Marut - initial API and implementation
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.slf4j.Logger;
@@ -20,9 +17,8 @@ import com.gregmarut.support.beangenerator.proxy.GeneratorInterfaceProxy;
 import com.gregmarut.support.beangenerator.rule.Rule;
 
 /**
- * This class is responsible for the actual initialization of a bean object. It uses reflection to
- * cascade an object
- * and populate its fields
+ * This class is responsible for the actual initialization of a bean object. It uses reflection to cascade an object and
+ * populate its fields
  * 
  * @author Greg Marut
  */
@@ -34,24 +30,41 @@ public abstract class BeanPropertyInitializer
 	
 	protected Properties properties;
 	
-	// holds the stack of instantiated classes to detect and prevent infinite loops
+	// holds the stack of instantiated classes to detect and prevent infinite
+	// loops
 	protected final Stack<Class<?>> instantiationStack;
+	
+	// holds the map that will store cached objects
+	private final Map<Class<?>, Object> beanCache;
 	
 	/**
 	 * Constructs a new BeanPropertyInitializer
 	 * 
 	 * @param properties
 	 */
-	BeanPropertyInitializer(final Properties properties)
+	BeanPropertyInitializer(final Properties properties, final Map<Class<?>, Object> beanCache)
 	{
+		// make sure the properties are not null
+		if (null == properties)
+		{
+			throw new IllegalArgumentException("properties cannot be null");
+		}
+		
+		// make sure the beanCache is not null
+		if (null == beanCache)
+		{
+			throw new IllegalArgumentException("beanCache cannot be null");
+		}
+		
 		setProperties(properties);
 		
-		instantiationStack = new Stack<Class<?>>();
+		this.instantiationStack = new Stack<Class<?>>();
+		
+		this.beanCache = beanCache;
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are
-	 * also instantiated.
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated.
 	 * 
 	 * @param clazz
 	 * @return Object
@@ -64,8 +77,7 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are
-	 * also instantiated
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated
 	 * provided the populate boolean is set to true.
 	 * 
 	 * @param clazz
@@ -75,43 +87,72 @@ public abstract class BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	final Object initialize(final Class<?> clazz, final boolean populate) throws InstantiationException,
-		IllegalAccessException
+			IllegalAccessException
 	{
 		logger.debug("Initializing ", clazz.getName());
 		
-		// instantiate a new version of this method
-		Object newObject = instantiate(clazz);
+		// holds the object to return
+		Object object = null;
 		
-		// make sure this class does not already exist in the instantiation stack
-		if (!instantiationStack.contains(clazz))
+		// check to see if caching is enabled
+		if (properties.isCache())
 		{
-			// make sure the new object is not null
-			// a new object can only be null if it was specifically defined as null in the
-			// properties.getDefaultValues()
-			if (null != newObject && !Proxy.isProxyClass(newObject.getClass()))
+			logger.debug("Attempting to lookup " + clazz.getName() + " from the cache.");
+			object = beanCache.get(clazz);
+		}
+		
+		// check to see if this object is null
+		if (null == object)
+		{
+			// make sure this class does not already exist in the instantiation
+			// stack
+			if (!instantiationStack.contains(clazz))
 			{
-				// push this class onto the stack
-				instantiationStack.push(clazz);
+				// instantiate a new version of this method
+				object = instantiate(clazz);
 				
-				if (populate)
+				// check to see if caching is enabled
+				if (properties.isCache())
 				{
-					// populate the object via methods
-					populate(newObject);
+					logger.debug("Adding " + clazz.getName() + " to the cache");
+					
+					// add this object to the model map
+					beanCache.put(clazz, object);
 				}
 				
-				// remove this class from the stack
-				instantiationStack.pop();
+				// make sure the new object is not null
+				// a new object can only be null if it was specifically defined as
+				// null in the
+				// properties.getDefaultValues()
+				if (null != object && !Proxy.isProxyClass(object.getClass()))
+				{
+					// push this class onto the stack
+					instantiationStack.push(clazz);
+					
+					if (populate)
+					{
+						// populate the object via methods
+						populate(object);
+					}
+					
+					// remove this class from the stack
+					instantiationStack.pop();
+				}
+			}
+			else
+			{
+				// an infinite loop was detected
+				logger.info("Cyclical dependency detected while attempting to initialize " + clazz.getName()
+						+ ". Skipping object population.");
 			}
 		}
 		else
 		{
-			// an infinite loop was detected
-			logger.info("Cyclical dependency detected while attempting to initialize " + clazz.getName()
-				+ ". Skipping object population.");
+			logger.debug("Found " + clazz.getName() + " in the cache.");
 		}
 		
-		// return the new object
-		return newObject;
+		// return the object
+		return object;
 	}
 	
 	/**
@@ -123,7 +164,8 @@ public abstract class BeanPropertyInitializer
 	final Object initialize(final Object object)
 	{
 		// make sure the new object is not null
-		// a new object can only be null if it was specifically defined as null in the
+		// a new object can only be null if it was specifically defined as null
+		// in the
 		// properties.getDefaultValues()
 		if (null != object)
 		{
@@ -146,8 +188,7 @@ public abstract class BeanPropertyInitializer
 	protected abstract void populate(final Object object);
 	
 	/**
-	 * Instantiates a new instance of the class. If the class is an interface, this method will
-	 * attempt to lookup the
+	 * Instantiates a new instance of the class. If the class is an interface, this method will attempt to lookup the
 	 * corresponding concrete class in the {@link InterfaceMapper}.
 	 * 
 	 * @param clazz
@@ -164,7 +205,8 @@ public abstract class BeanPropertyInitializer
 		// check to see if this class is an interface
 		if (clazz.isInterface())
 		{
-			// attempt to map the interface to a concrete class to instantiate instead
+			// attempt to map the interface to a concrete class to instantiate
+			// instead
 			Class<?> concreteClass = properties.getInterfaceMapper().get(clazz);
 			
 			if (null != concreteClass)
@@ -176,7 +218,8 @@ public abstract class BeanPropertyInitializer
 			}
 			else
 			{
-				// check to see if proxies should be generator for unmapped interfaces
+				// check to see if proxies should be generator for unmapped
+				// interfaces
 				if (properties.getProxyUnmappedInterfaces())
 				{
 					// create a new proxy for this interface
@@ -185,7 +228,7 @@ public abstract class BeanPropertyInitializer
 				else
 				{
 					throw new InstantiationException("Interface " + clazz.getName()
-						+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
+							+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
 				}
 			}
 		}
@@ -235,8 +278,7 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule}
-	 * that match this
+	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule} that match this
 	 * specific setter method. If a match is found, the {@link Rule} is returned.
 	 * 
 	 * @param name
@@ -251,16 +293,20 @@ public abstract class BeanPropertyInitializer
 		// make sure the rule mapping object is not null
 		if (null != properties.getRuleMapping())
 		{
-			// convert the class from its primitive value if applicable, otherwise use the original
+			// convert the class from its primitive value if applicable,
+			// otherwise use the original
 			// value
-			// The reason that primitives have to be cast up is because Generics does not support
+			// The reason that primitives have to be cast up is because Generics
+			// does not support
 			// primitives.
 			Class<?> nonPrimitiveClass = ClassConversionUtil.convertToNonPrimitive(clazz);
 			
-			// check to see if the rule mapping contains rules for this parameter type
+			// check to see if the rule mapping contains rules for this
+			// parameter type
 			if (properties.getRuleMapping().contains(nonPrimitiveClass))
 			{
-				// get the list of rules from the rule mapping based on this parameter type
+				// get the list of rules from the rule mapping based on this
+				// parameter type
 				List<Rule<?>> rules = properties.getRuleMapping().get(nonPrimitiveClass);
 				
 				// for every rule in the list or until a rule is found
