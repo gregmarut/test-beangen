@@ -1,11 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2013 Greg Marut.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
- * Contributors:
- * Greg Marut - initial API and implementation
+ * Copyright (c) 2013 Greg Marut. All rights reserved. This program and the accompanying materials are made available
+ * under the terms of the GNU Public License v3.0 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html Contributors: Greg Marut - initial API and implementation
  ******************************************************************************/
 package com.gregmarut.support.bean;
 
@@ -27,6 +23,9 @@ public class AnotherTestBean
 	private float someFloat;
 	private double someDouble;
 	private short someShort;
+	
+	private int[] someNumbers;
+	private byte[] someBytes;
 	
 	// make sure that the generator can detect and handle cyclical dependencies
 	private TestBean testBean;
@@ -96,6 +95,26 @@ public class AnotherTestBean
 		return someShort;
 	}
 	
+	public int[] getSomeNumbers()
+	{
+		return someNumbers;
+	}
+	
+	public void setSomeNumbers(int[] someNumbers)
+	{
+		this.someNumbers = someNumbers;
+	}
+	
+	public byte[] getSomeBytes()
+	{
+		return someBytes;
+	}
+	
+	public void setSomeBytes(byte[] someBytes)
+	{
+		this.someBytes = someBytes;
+	}
+	
 	public void setSomeShort(short someShort)
 	{
 		this.someShort = someShort;
@@ -111,7 +130,7 @@ public class AnotherTestBean
 	
 	/**
 	 * @param someClass
-	 *        the someClass to set
+	 *            the someClass to set
 	 */
 	public void setSomeClass(Class<?> someClass)
 	{
@@ -128,7 +147,7 @@ public class AnotherTestBean
 	
 	/**
 	 * @param testBean
-	 *        the testBean to set
+	 *            the testBean to set
 	 */
 	public void setTestBean(TestBean testBean)
 	{

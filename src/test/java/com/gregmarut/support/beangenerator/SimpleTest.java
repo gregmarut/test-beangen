@@ -1,11 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2013 Greg Marut.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
- * Contributors:
- * Greg Marut - initial API and implementation
+ * Copyright (c) 2013 Greg Marut. All rights reserved. This program and the accompanying materials are made available
+ * under the terms of the GNU Public License v3.0 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html Contributors: Greg Marut - initial API and implementation
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
@@ -37,8 +33,7 @@ public class SimpleTest
 	}
 	
 	/**
-	 * A simple test to assure that the String fields in the object were set to the name of the
-	 * method (minus the "set")
+	 * A simple test to assure that the String fields in the object were set to the name of the method (minus the "set")
 	 * Example - "setAccountID" gets set to "AccountID"
 	 */
 	@Test
@@ -55,8 +50,7 @@ public class SimpleTest
 	}
 	
 	/**
-	 * A simple test to assure that values that have been specified in the {@link DefaultValues}
-	 * have been set as
+	 * A simple test to assure that values that have been specified in the {@link DefaultValues} have been set as
 	 * expected
 	 */
 	@Test
@@ -69,5 +63,11 @@ public class SimpleTest
 		assertEquals(DefaultValues.DEFAULT_FLOAT, (Float) testBean.getFloatData());
 		assertEquals(DefaultValues.DEFAULT_INTEGER, (Integer) testBean.getIntData());
 		assertEquals(DefaultValues.DEFAULT_INTEGER, testBean.getInteger());
+		
+		assertEquals(1, testBean.getAnotherTestBean().getSomeNumbers().length);
+		assertEquals(DefaultValues.DEFAULT_INTEGER.intValue(), testBean.getAnotherTestBean().getSomeNumbers()[0]);
+		
+		assertEquals(1, testBean.getAnotherTestBean().getSomeBytes().length);
+		assertEquals(DefaultValues.DEFAULT_BYTE.byteValue(), testBean.getAnotherTestBean().getSomeBytes()[0]);
 	}
 }

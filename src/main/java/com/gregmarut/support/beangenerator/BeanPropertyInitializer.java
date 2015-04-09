@@ -341,12 +341,13 @@ public abstract class BeanPropertyInitializer
 			}
 			catch (InstantiationException e)
 			{
-				logger.error(e.getMessage(), e);
+				final String message = "Failed to instantiate: " + clazz.getName();
+				logger.warn(message, e);
 				return null;
 			}
 			catch (IllegalAccessException e)
 			{
-				logger.error(e.getMessage(), e);
+				logger.warn(e.getMessage(), e);
 				return null;
 			}
 		}
