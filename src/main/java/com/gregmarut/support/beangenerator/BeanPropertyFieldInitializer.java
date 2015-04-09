@@ -11,8 +11,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Map;
 
+import com.gregmarut.support.beangenerator.cache.CacheManager;
+import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.rule.Rule;
 
 /**
@@ -28,9 +29,9 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	 * 
 	 * @param properties
 	 */
-	BeanPropertyFieldInitializer(final Properties properties, final Map<Class<?>, Object> beanCache)
+	BeanPropertyFieldInitializer(final Properties properties)
 	{
-		super(properties, beanCache);
+		super(properties);
 	}
 	
 	protected void populate(final Object object)
@@ -79,7 +80,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					}
 					else
 					{
-						logger.debug("Rule found for \"" + field.getName() + "\":" + clazz.getName());
+						logger.debug("Rule found for \"{}\":{}", field.getName(), clazz.getName());
 						
 						// set the value to the value defined in the rule
 						value = rule.getValue();
@@ -126,7 +127,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	private Object getValue(final Field field, final Class<?> clazz) throws InstantiationException,
 			IllegalAccessException
 	{
-		Object value = null;
+		// holds the value of the object to return
+		final Object value;
 		
 		// make sure the parameter is not null
 		if (null != clazz)
@@ -166,16 +168,30 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 				// check to see if this value exists in the default values map
 				if (properties.getDefaultValues().containsKey(clazz))
 				{
-					logger.debug("Found default value for \"" + field.getName() + "\":" + clazz.getName());
+					logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
 					
 					value = properties.getDefaultValues().get(clazz);
 				}
 				else
 				{
-					// attempt to initialize the value
-					value = initialize(clazz);
+					// create the object that instructs how to retrieve the object
+					Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
+					
+					// check to see if caching is enabled
+					if (properties.isCache())
+					{
+						value = CacheManager.getInstance().getOrRetieve(clazz, retrieve);
+					}
+					else
+					{
+						value = retrieve.retrieve();
+					}
 				}
 			}
+		}
+		else
+		{
+			value = null;
 		}
 		
 		return value;
@@ -227,7 +243,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 								// attempting to recast it
 								if (parameterizedTypes.getActualTypeArguments()[0] instanceof Class)
 								{
-									Class<?> clazz = (Class<?>) parameterizedTypes.getActualTypeArguments()[0];
+									final Class<?> clazz = (Class<?>) parameterizedTypes.getActualTypeArguments()[0];
 									
 									logger.debug("Populating " + collection.getClass().getName()
 											+ " with objects of type " + clazz.getName());
@@ -236,13 +252,26 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 									for (int i = 0; i < properties.getCollectionAutoFillCount(); i++)
 									{
 										// initialize the new object
-										Object obj = initialize(clazz);
+										Object object = null;
+										
+										// create the object that instructs how to retrieve the object
+										Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
+										
+										// check to see if caching is enabled
+										if (properties.isCache())
+										{
+											object = CacheManager.getInstance().getOrRetieve(clazz, retrieve);
+										}
+										else
+										{
+											object = retrieve.retrieve();
+										}
 										
 										// make sure the object is not null
-										if (null != obj)
+										if (null != object)
 										{
 											// add the object to the collection
-											collection.add(obj);
+											collection.add(object);
 										}
 									}
 								}
@@ -265,10 +294,6 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 			{
 				logger.error(e.getMessage(), e);
 			}
-			catch (InstantiationException e)
-			{
-				logger.error(e.getMessage(), e);
-			}
 		}
 	}
 	
@@ -284,4 +309,5 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	{
 		return super.checkForMatchingRule(field.getName(), clazz);
 	}
+	
 }

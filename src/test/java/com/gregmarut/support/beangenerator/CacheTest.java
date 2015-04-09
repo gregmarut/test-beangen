@@ -24,14 +24,23 @@ public class CacheTest
 		BeanPropertyGenerator beanPropertyGenerator = new BeanPropertyGenerator(true);
 		
 		// create a new test object
-		TestBean testBean = beanPropertyGenerator.get(TestBean.class);
+		TestBean testBean1 = beanPropertyGenerator.get(TestBean.class);
+		TestBean testBean2 = beanPropertyGenerator.get(TestBean.class);
 		
 		// create another object
 		AnotherTestBean anotherTestBean = beanPropertyGenerator.get(AnotherTestBean.class);
 		
 		// these two beans should be exactly equal (even object references)
-		Assert.assertEquals(anotherTestBean, testBean.getAnotherTestBean());
-		Assert.assertTrue(anotherTestBean == testBean.getAnotherTestBean());
+		Assert.assertEquals(testBean1, testBean2);
+		Assert.assertTrue(testBean1 == testBean2);
+		
+		// these two beans should be exactly equal (even object references)
+		Assert.assertEquals(anotherTestBean, testBean1.getAnotherTestBean());
+		Assert.assertTrue(anotherTestBean == testBean1.getAnotherTestBean());
+		
+		// these two beans should be exactly equal (even object references)
+		Assert.assertEquals(testBean1.getAnotherTestBean(), testBean2.getAnotherTestBean());
+		Assert.assertTrue(testBean1.getAnotherTestBean() == testBean2.getAnotherTestBean());
 	}
 	
 	/**
@@ -44,13 +53,22 @@ public class CacheTest
 		BeanPropertyGenerator beanPropertyGenerator = new BeanPropertyGenerator(false);
 		
 		// create a new test object
-		TestBean testBean = beanPropertyGenerator.get(TestBean.class);
+		TestBean testBean1 = beanPropertyGenerator.get(TestBean.class);
+		TestBean testBean2 = beanPropertyGenerator.get(TestBean.class);
 		
 		// create another object
 		AnotherTestBean anotherTestBean = beanPropertyGenerator.get(AnotherTestBean.class);
 		
-		// these two beans should be exactly equal (even object references)
-		Assert.assertNotSame(anotherTestBean, testBean.getAnotherTestBean());
-		Assert.assertFalse(anotherTestBean == testBean.getAnotherTestBean());
+		// these two beans should be different references
+		Assert.assertNotSame(testBean1, testBean2);
+		Assert.assertFalse(testBean1 == testBean2);
+		
+		// these two beans should be different references
+		Assert.assertNotSame(anotherTestBean, testBean1.getAnotherTestBean());
+		Assert.assertFalse(anotherTestBean == testBean1.getAnotherTestBean());
+		
+		// these two beans should be different references
+		Assert.assertNotSame(testBean1.getAnotherTestBean(), testBean2.getAnotherTestBean());
+		Assert.assertFalse(testBean1.getAnotherTestBean() == testBean2.getAnotherTestBean());
 	}
 }

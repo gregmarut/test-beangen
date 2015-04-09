@@ -6,13 +6,13 @@
 package com.gregmarut.support.beangenerator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gregmarut.support.beangenerator.cache.CacheManager;
+import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
 
 /**
@@ -41,9 +41,6 @@ public final class BeanPropertyGenerator
 	// ** Objects **//
 	// instantiate the logger
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	
-	// holds the map that will store cached objects
-	private final Map<Class<?>, Object> beanCache;
 	
 	// holds the properties for this generator
 	private final Properties properties;
@@ -103,9 +100,6 @@ public final class BeanPropertyGenerator
 	 */
 	public BeanPropertyGenerator(final boolean cache, final boolean proxyUnmappedInterfaces, final Properties properties)
 	{
-		// assign the map of bean objects
-		beanCache = new HashMap<Class<?>, Object>();
-		
 		// assign the properties
 		this.properties = properties;
 		
@@ -141,20 +135,36 @@ public final class BeanPropertyGenerator
 	@SuppressWarnings("unchecked")
 	public <T> T get(final Class<T> clazz, final boolean populate)
 	{
-		try
+		// create the object that instructs how to retrieve the object
+		Retrieve<T> retrieve = new Retrieve<T>()
 		{
-			// attempt to initialize the new model object
-			T obj = (T) getBeanPropertyInitializer().initialize(clazz, populate);
-			
-			return obj;
+			@Override
+			public T retrieve()
+			{
+				try
+				{
+					// attempt to initialize the new model object
+					return getBeanPropertyInitializer().initialize(clazz, populate);
+				}
+				catch (InstantiationException e)
+				{
+					throw new BeanInitializationException(e);
+				}
+				catch (IllegalAccessException e)
+				{
+					throw new BeanInitializationException(e);
+				}
+			}
+		};
+		
+		// check to see if caching is enabled
+		if (properties.isCache())
+		{
+			return (T) CacheManager.getInstance().getOrRetieve(clazz, retrieve);
 		}
-		catch (InstantiationException e)
+		else
 		{
-			throw new BeanInitializationException(e);
-		}
-		catch (IllegalAccessException e)
-		{
-			throw new BeanInitializationException(e);
+			return retrieve.retrieve();
 		}
 	}
 	
@@ -226,6 +236,6 @@ public final class BeanPropertyGenerator
 	protected final BeanPropertyInitializer getBeanPropertyInitializer()
 	{
 		// create a new instance of the initializer so that it is thread safe.
-		return new BeanPropertyFieldInitializer(properties, beanCache);
+		return new BeanPropertyFieldInitializer(properties);
 	}
 }

@@ -7,12 +7,13 @@ package com.gregmarut.support.beangenerator;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gregmarut.support.beangenerator.cache.CacheManager;
+import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.proxy.GeneratorInterfaceProxy;
 import com.gregmarut.support.beangenerator.rule.Rule;
 
@@ -34,15 +35,12 @@ public abstract class BeanPropertyInitializer
 	// loops
 	protected final Stack<Class<?>> instantiationStack;
 	
-	// holds the map that will store cached objects
-	private final Map<Class<?>, Object> beanCache;
-	
 	/**
 	 * Constructs a new BeanPropertyInitializer
 	 * 
 	 * @param properties
 	 */
-	BeanPropertyInitializer(final Properties properties, final Map<Class<?>, Object> beanCache)
+	BeanPropertyInitializer(final Properties properties)
 	{
 		// make sure the properties are not null
 		if (null == properties)
@@ -50,17 +48,9 @@ public abstract class BeanPropertyInitializer
 			throw new IllegalArgumentException("properties cannot be null");
 		}
 		
-		// make sure the beanCache is not null
-		if (null == beanCache)
-		{
-			throw new IllegalArgumentException("beanCache cannot be null");
-		}
-		
 		setProperties(properties);
 		
 		this.instantiationStack = new Stack<Class<?>>();
-		
-		this.beanCache = beanCache;
 	}
 	
 	/**
@@ -71,7 +61,7 @@ public abstract class BeanPropertyInitializer
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	final Object initialize(final Class<?> clazz) throws InstantiationException, IllegalAccessException
+	final <T> T initialize(final Class<T> clazz) throws InstantiationException, IllegalAccessException
 	{
 		return initialize(clazz, true);
 	}
@@ -86,69 +76,55 @@ public abstract class BeanPropertyInitializer
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	final Object initialize(final Class<?> clazz, final boolean populate) throws InstantiationException,
+	final <T> T initialize(final Class<T> clazz, final boolean populate) throws InstantiationException,
 			IllegalAccessException
 	{
 		logger.debug("Initializing ", clazz.getName());
 		
 		// holds the object to return
-		Object object = null;
+		final T object;
 		
-		// check to see if caching is enabled
-		if (properties.isCache())
+		// make sure this class does not already exist in the instantiation
+		// stack
+		if (!instantiationStack.contains(clazz))
 		{
-			logger.debug("Attempting to lookup " + clazz.getName() + " from the cache.");
-			object = beanCache.get(clazz);
-		}
-		
-		// check to see if this object is null
-		if (null == object)
-		{
-			// make sure this class does not already exist in the instantiation
-			// stack
-			if (!instantiationStack.contains(clazz))
+			// instantiate a new version of this method
+			object = instantiate(clazz);
+			
+			// check to see if caching is enabled
+			if (properties.isCache())
 			{
-				// instantiate a new version of this method
-				object = instantiate(clazz);
+				logger.debug("Adding " + clazz.getName() + " to the cache");
 				
-				// check to see if caching is enabled
-				if (properties.isCache())
-				{
-					logger.debug("Adding " + clazz.getName() + " to the cache");
-					
-					// add this object to the model map
-					beanCache.put(clazz, object);
-				}
-				
-				// make sure the new object is not null
-				// a new object can only be null if it was specifically defined as
-				// null in the
-				// properties.getDefaultValues()
-				if (null != object && !Proxy.isProxyClass(object.getClass()))
-				{
-					// push this class onto the stack
-					instantiationStack.push(clazz);
-					
-					if (populate)
-					{
-						// populate the object via methods
-						populate(object);
-					}
-					
-					// remove this class from the stack
-					instantiationStack.pop();
-				}
+				// add this object to the model map
+				CacheManager.getInstance().put(clazz, object);
 			}
-			else
+			
+			// make sure the new object is not null
+			// a new object can only be null if it was specifically defined as
+			// null in the
+			// properties.getDefaultValues()
+			if (null != object && !Proxy.isProxyClass(object.getClass()))
 			{
-				// an infinite loop was detected
-				logger.info("Cyclical dependency detected while attempting to initialize " + clazz.getName()
-						+ ". Skipping object population.");
+				// push this class onto the stack
+				instantiationStack.push(clazz);
+				
+				if (populate)
+				{
+					// populate the object via methods
+					populate(object);
+				}
+				
+				// remove this class from the stack
+				instantiationStack.pop();
 			}
 		}
 		else
 		{
-			logger.debug("Found " + clazz.getName() + " in the cache.");
+			// an infinite loop was detected
+			logger.info("Cyclical dependency detected while attempting to initialize " + clazz.getName()
+					+ ". Skipping object population.");
+			object = null;
 		}
 		
 		// return the object
@@ -197,17 +173,17 @@ public abstract class BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	@SuppressWarnings("unchecked")
-	protected final Object instantiate(final Class<?> clazz) throws InstantiationException, IllegalAccessException
+	protected final <T> T instantiate(final Class<T> clazz) throws InstantiationException, IllegalAccessException
 	{
 		// holds the object to return
-		Object newObject;
+		T newObject;
 		
 		// check to see if this class is an interface
 		if (clazz.isInterface())
 		{
 			// attempt to map the interface to a concrete class to instantiate
 			// instead
-			Class<?> concreteClass = properties.getInterfaceMapper().get(clazz);
+			Class<T> concreteClass = (Class<T>) properties.getInterfaceMapper().get(clazz);
 			
 			if (null != concreteClass)
 			{
@@ -242,7 +218,7 @@ public abstract class BeanPropertyInitializer
 			if (enumValues.length > 0)
 			{
 				// create a new enum value from the first value
-				newObject = enumValues[0];
+				newObject = (T) enumValues[0];
 			}
 			else
 			{
@@ -256,7 +232,7 @@ public abstract class BeanPropertyInitializer
 			{
 				logger.debug("Found default value for " + clazz.getName());
 				
-				newObject = properties.getDefaultValues().get(clazz);
+				newObject = (T) properties.getDefaultValues().get(clazz);
 			}
 			else
 			{
@@ -341,4 +317,38 @@ public abstract class BeanPropertyInitializer
 	{
 		return properties;
 	}
+	
+	/**
+	 * Defines a blueprint for how to retrieve an object by calling the initialize method
+	 * 
+	 * @author Greg Marut
+	 */
+	protected class RetrieveByInitialize implements Retrieve<Object>
+	{
+		private Class<?> clazz;
+		
+		public RetrieveByInitialize(final Class<?> clazz)
+		{
+			this.clazz = clazz;
+		}
+		
+		@Override
+		public Object retrieve()
+		{
+			try
+			{
+				return initialize(clazz);
+			}
+			catch (InstantiationException e)
+			{
+				logger.error(e.getMessage(), e);
+				return null;
+			}
+			catch (IllegalAccessException e)
+			{
+				logger.error(e.getMessage(), e);
+				return null;
+			}
+		}
+	};
 }
