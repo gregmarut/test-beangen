@@ -28,7 +28,7 @@ public class AnotherTestBean
 	private double someDouble;
 	private short someShort;
 	
-	//make sure that the generator can detect and handle cyclical dependencies
+	// make sure that the generator can detect and handle cyclical dependencies
 	private TestBean testBean;
 	
 	public String getSomething()
@@ -111,13 +111,13 @@ public class AnotherTestBean
 	
 	/**
 	 * @param someClass
-	 * the someClass to set
+	 *        the someClass to set
 	 */
 	public void setSomeClass(Class<?> someClass)
 	{
 		this.someClass = someClass;
 	}
-
+	
 	/**
 	 * @return the testBean
 	 */
@@ -125,9 +125,10 @@ public class AnotherTestBean
 	{
 		return testBean;
 	}
-
+	
 	/**
-	 * @param testBean the testBean to set
+	 * @param testBean
+	 *        the testBean to set
 	 */
 	public void setTestBean(TestBean testBean)
 	{

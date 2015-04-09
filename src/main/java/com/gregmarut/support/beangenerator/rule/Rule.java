@@ -51,9 +51,9 @@ public abstract class Rule<V>
 	 * Determines if this rule matches the given class type and name
 	 * 
 	 * @param clazz
-	 * The type of value that is being checked
+	 *        The type of value that is being checked
 	 * @param name
-	 * The name of the attribute
+	 *        The name of the attribute
 	 * @return
 	 */
 	public abstract boolean isMatch(final Class<?> clazz, final String name);
