@@ -110,4 +110,17 @@
 			</build>
 		</profile>
 	</profiles>
+
+	<distributionManagement>
+		<repository>
+			<id>localNexus</id>
+			<name>Internal Releases</name>
+			<url>http://192.168.10.50:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>localNexus</id>
+			<name>Internal Releases</name>
+			<url>http://192.168.10.50:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
