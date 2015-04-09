@@ -6,7 +6,7 @@
 	<version>2.3-SNAPSHOT</version>
 	<name>Bean Property Generator</name>
 	<description>Supports unit testing by dynamically creating bean objects and populating their fields to default values.</description>
-	<url>http://code.google.com/p/java-bean-generator/</url>
+	<url>https://github.com/gregmarut/test-beangen/</url>
 
 	<licenses>
 		<license>
@@ -17,9 +17,9 @@
 	</licenses>
 
 	<scm>
-		<url>https://java-bean-generator.googlecode.com/svn/trunk/test-beangen/</url>
-		<connection>scm:svn:https://java-bean-generator.googlecode.com/svn/trunk/test-beangen/</connection>
-		<developerConnection>scm:svn:https://java-bean-generator.googlecode.com/svn/trunk/test-beangen/</developerConnection>
+		<url>https://github.com/gregmarut/test-beangen/</url>
+		<connection>scm:git:https://github.com/gregmarut/test-beangen/</connection>
+		<developerConnection>scm:git:https://github.com/gregmarut/test-beangen/</developerConnection>
 	</scm>
 
 	<developers>
