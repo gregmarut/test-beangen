@@ -1,7 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2013 Greg Marut. All rights reserved. This program and the accompanying materials are made available
- * under the terms of the GNU Public License v3.0 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html Contributors: Greg Marut - initial API and implementation
+ * <pre>
+ * Copyright (c) 2015 Greg.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Greg - initial API and implementation
+ * </pre>
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
@@ -17,8 +24,8 @@ import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.rule.Rule;
 
 /**
- * This class is responsible for the actual initialization of a bean object. It uses reflection to cascade an object
- * looking for all declared fields and create a new instance of that class.
+ * This class is responsible for the actual initialization of a bean object. It uses reflection to
+ * cascade an object looking for all declared fields and create a new instance of that class.
  * 
  * @author Greg Marut
  */
@@ -101,7 +108,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					// However, some other fields in the object that are not of type JAXBElement
 					// will get set, and depending on the test case, this may be fine.
 					logger.info("Could not intialize property named: {} of type: {} in object of type: {}",
-							field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
+						field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
 				}
 				catch (IllegalArgumentException e)
 				{
@@ -125,7 +132,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	private Object getValue(final Field field, final Class<?> clazz) throws InstantiationException,
-			IllegalAccessException
+		IllegalAccessException
 	{
 		// holds the value of the object to return
 		final Object value;
@@ -198,7 +205,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	}
 	
 	/**
-	 * Searches all of the fields of a class and attempts to pick out the fields that return a collection. For each
+	 * Searches all of the fields of a class and attempts to pick out the fields that return a
+	 * collection. For each
 	 * collection found, this method populates it with test data
 	 * 
 	 * @param fields
@@ -246,7 +254,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 									final Class<?> clazz = (Class<?>) parameterizedTypes.getActualTypeArguments()[0];
 									
 									logger.debug("Populating " + collection.getClass().getName()
-											+ " with objects of type " + clazz.getName());
+										+ " with objects of type " + clazz.getName());
 									
 									// for the specific number of times to auto fill lists
 									for (int i = 0; i < properties.getCollectionAutoFillCount(); i++)
@@ -254,7 +262,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 										// initialize the new object
 										Object object = null;
 										
-										// create the object that instructs how to retrieve the object
+										// create the object that instructs how to retrieve the
+										// object
 										Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
 										
 										// check to see if caching is enabled
@@ -278,8 +287,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 								else
 								{
 									logger.debug("Could not populate the list of "
-											+ parameterizedTypes.getActualTypeArguments()[0].toString()
-											+ " because the parameterized type could not be converted to an object.");
+										+ parameterizedTypes.getActualTypeArguments()[0].toString()
+										+ " because the parameterized type could not be converted to an object.");
 								}
 							}
 						}
@@ -298,7 +307,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule} that match this
+	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule}
+	 * that match this
 	 * specific field name. If a match is found, the {@link Rule} is returned.
 	 * 
 	 * @param field

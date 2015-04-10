@@ -1,7 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2013 Greg Marut. All rights reserved. This program and the accompanying materials are made available
- * under the terms of the GNU Public License v3.0 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html Contributors: Greg Marut - initial API and implementation
+ * <pre>
+ * Copyright (c) 2015 Greg.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Greg - initial API and implementation
+ * </pre>
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
@@ -44,44 +51,92 @@ public class DefaultValues extends HashMap<Class<?>, Object>
 	public DefaultValues()
 	{
 		super.put(Integer.class, DEFAULT_INTEGER);
-		super.put(Integer[].class, new Integer[] { DEFAULT_INTEGER });
+		super.put(Integer[].class, new Integer[]
+		{
+			DEFAULT_INTEGER
+		});
 		super.put(int.class, DEFAULT_INTEGER);
-		super.put(int[].class, new int[] { DEFAULT_INTEGER });
+		super.put(int[].class, new int[]
+		{
+			DEFAULT_INTEGER
+		});
 		
 		super.put(Short.class, DEFAULT_SHORT);
-		super.put(Short[].class, new Short[] { DEFAULT_SHORT });
+		super.put(Short[].class, new Short[]
+		{
+			DEFAULT_SHORT
+		});
 		super.put(short.class, DEFAULT_SHORT);
-		super.put(short[].class, new short[] { DEFAULT_SHORT });
+		super.put(short[].class, new short[]
+		{
+			DEFAULT_SHORT
+		});
 		
 		super.put(Float.class, DEFAULT_FLOAT);
-		super.put(Float[].class, new Float[] { DEFAULT_FLOAT });
+		super.put(Float[].class, new Float[]
+		{
+			DEFAULT_FLOAT
+		});
 		super.put(float.class, DEFAULT_FLOAT);
-		super.put(float[].class, new float[] { DEFAULT_FLOAT });
+		super.put(float[].class, new float[]
+		{
+			DEFAULT_FLOAT
+		});
 		
 		super.put(Double.class, DEFAULT_DOUBLE);
-		super.put(Double[].class, new Double[] { DEFAULT_DOUBLE });
+		super.put(Double[].class, new Double[]
+		{
+			DEFAULT_DOUBLE
+		});
 		super.put(double.class, DEFAULT_DOUBLE);
-		super.put(double[].class, new double[] { DEFAULT_DOUBLE });
+		super.put(double[].class, new double[]
+		{
+			DEFAULT_DOUBLE
+		});
 		
 		super.put(Long.class, DEFAULT_LONG);
-		super.put(Long[].class, new Long[] { DEFAULT_LONG });
+		super.put(Long[].class, new Long[]
+		{
+			DEFAULT_LONG
+		});
 		super.put(long.class, DEFAULT_LONG);
-		super.put(long[].class, new long[] { DEFAULT_LONG });
+		super.put(long[].class, new long[]
+		{
+			DEFAULT_LONG
+		});
 		
 		super.put(Boolean.class, DEFAULT_BOOLEAN);
-		super.put(Boolean[].class, new Boolean[] { DEFAULT_BOOLEAN });
+		super.put(Boolean[].class, new Boolean[]
+		{
+			DEFAULT_BOOLEAN
+		});
 		super.put(boolean.class, DEFAULT_BOOLEAN);
-		super.put(boolean[].class, new boolean[] { DEFAULT_BOOLEAN });
+		super.put(boolean[].class, new boolean[]
+		{
+			DEFAULT_BOOLEAN
+		});
 		
 		super.put(Byte.class, DEFAULT_BYTE);
-		super.put(Byte[].class, new Byte[] { DEFAULT_BYTE });
+		super.put(Byte[].class, new Byte[]
+		{
+			DEFAULT_BYTE
+		});
 		super.put(byte.class, DEFAULT_BYTE);
-		super.put(byte[].class, new byte[] { DEFAULT_BYTE });
+		super.put(byte[].class, new byte[]
+		{
+			DEFAULT_BYTE
+		});
 		
 		super.put(Character.class, DEFAULT_CHARACTER);
-		super.put(Character[].class, new Character[] { DEFAULT_CHARACTER });
+		super.put(Character[].class, new Character[]
+		{
+			DEFAULT_CHARACTER
+		});
 		super.put(char.class, DEFAULT_CHARACTER);
-		super.put(char[].class, new char[] { DEFAULT_CHARACTER });
+		super.put(char[].class, new char[]
+		{
+			DEFAULT_CHARACTER
+		});
 		
 		super.put(Date.class, DEFAULT_DATE);
 		
