@@ -111,7 +111,7 @@
 
 	<profiles>
 		<profile>
-			<id>submit</id>
+			<id>sign</id>
 			<build>
 				<plugins>
 					<plugin>
