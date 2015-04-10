@@ -1,7 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2013 Greg Marut. All rights reserved. This program and the accompanying materials are made available
- * under the terms of the GNU Public License v3.0 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html Contributors: Greg Marut - initial API and implementation
+ * <pre>
+ * Copyright (c) 2015 Greg.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Greg - initial API and implementation
+ * </pre>
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
@@ -57,10 +64,13 @@ public final class BeanPropertyGenerator
 	 * Constructs a new BeanPropertyGenerator object
 	 * 
 	 * @param cache
-	 *            Determines whether or not to cache beans once they are created for faster performance. Be advised that
-	 *            once caching is enabled, any objects that are created again within the same scope reference the
-	 *            originally created object. If the referenced object was previously modified, all consequent calls
-	 *            return the same modified object.
+	 *        Determines whether or not to cache beans once they are created for faster performance.
+	 *        Be advised that
+	 *        once caching is enabled, any objects that are created again within the same scope
+	 *        reference the
+	 *        originally created object. If the referenced object was previously modified, all
+	 *        consequent calls
+	 *        return the same modified object.
 	 */
 	public BeanPropertyGenerator(final boolean cache)
 	{
@@ -71,13 +81,17 @@ public final class BeanPropertyGenerator
 	 * Constructs a new BeanPropertyGenerator object
 	 * 
 	 * @param cache
-	 *            Determines whether or not to cache beans once they are created for faster performance. Be advised that
-	 *            once caching is enabled, any objects that are created again within the same scope reference the
-	 *            originally created object. If the referenced object was previously modified, all consequent calls
-	 *            return the same modified object.
+	 *        Determines whether or not to cache beans once they are created for faster performance.
+	 *        Be advised that
+	 *        once caching is enabled, any objects that are created again within the same scope
+	 *        reference the
+	 *        originally created object. If the referenced object was previously modified, all
+	 *        consequent calls
+	 *        return the same modified object.
 	 * @param proxyUnmappedInterfaces
-	 *            Determines if interfaces that have not been mapped should be instantiated using dynamic proxies. These
-	 *            proxies will then generate any objects that are returned from the interfaces
+	 *        Determines if interfaces that have not been mapped should be instantiated using
+	 *        dynamic proxies. These
+	 *        proxies will then generate any objects that are returned from the interfaces
 	 */
 	public BeanPropertyGenerator(final boolean cache, final boolean proxyUnmappedInterfaces)
 	{
@@ -88,15 +102,19 @@ public final class BeanPropertyGenerator
 	 * Constructs a new BeanPropertyGenerator object
 	 * 
 	 * @param cache
-	 *            Determines whether or not to cache beans once they are created for faster performance. Be advised that
-	 *            once caching is enabled, any objects that are created again within the same scope reference the
-	 *            originally created object. If the referenced object was previously modified, all consequent calls
-	 *            return the same modified object.
+	 *        Determines whether or not to cache beans once they are created for faster performance.
+	 *        Be advised that
+	 *        once caching is enabled, any objects that are created again within the same scope
+	 *        reference the
+	 *        originally created object. If the referenced object was previously modified, all
+	 *        consequent calls
+	 *        return the same modified object.
 	 * @param proxyUnmappedInterfaces
-	 *            Determines if interfaces that have not been mapped should be instantiated using dynamic proxies. These
-	 *            proxies will then generate any objects that are returned from the interfaces
+	 *        Determines if interfaces that have not been mapped should be instantiated using
+	 *        dynamic proxies. These
+	 *        proxies will then generate any objects that are returned from the interfaces
 	 * @param properties
-	 *            Holds the properties that will determine how this generator will function
+	 *        Holds the properties that will determine how this generator will function
 	 */
 	public BeanPropertyGenerator(final boolean cache, final boolean proxyUnmappedInterfaces, final Properties properties)
 	{
@@ -113,7 +131,8 @@ public final class BeanPropertyGenerator
 	}
 	
 	/**
-	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the map, it is initialized
+	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the
+	 * map, it is initialized
 	 * and returned
 	 * 
 	 * @param clazz
@@ -125,7 +144,8 @@ public final class BeanPropertyGenerator
 	}
 	
 	/**
-	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the map, it is initialized
+	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the
+	 * map, it is initialized
 	 * and returned
 	 * 
 	 * @param clazz
@@ -172,7 +192,7 @@ public final class BeanPropertyGenerator
 	 * Creates a list and populates it with objects of the specified class type
 	 * 
 	 * @param clazz
-	 *            The class to instantiate
+	 *        The class to instantiate
 	 * @return
 	 */
 	public List<?> getList(final Class<?> clazz)
@@ -184,9 +204,9 @@ public final class BeanPropertyGenerator
 	 * Creates a list and populates it with objects of the specified class type
 	 * 
 	 * @param clazz
-	 *            The class to instantiate
+	 *        The class to instantiate
 	 * @param count
-	 *            How many objects to put into the list
+	 *        How many objects to put into the list
 	 * @return
 	 */
 	public List<?> getList(final Class<?> clazz, final int count)
