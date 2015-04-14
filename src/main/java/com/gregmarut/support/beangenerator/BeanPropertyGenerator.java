@@ -57,7 +57,7 @@ public final class BeanPropertyGenerator
 	 */
 	public BeanPropertyGenerator()
 	{
-		this(false, false);
+		this(true, false);
 	}
 	
 	/**
