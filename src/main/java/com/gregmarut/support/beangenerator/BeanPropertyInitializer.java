@@ -13,8 +13,9 @@
 package com.gregmarut.support.beangenerator;
 
 import java.lang.reflect.Proxy;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,7 @@ public abstract class BeanPropertyInitializer
 	
 	// holds the stack of instantiated classes to detect and prevent infinite
 	// loops
-	protected final Stack<Class<?>> instantiationStack;
+	protected final Deque<Class<?>> instantiationStack;
 	
 	/**
 	 * Constructs a new BeanPropertyInitializer
@@ -60,7 +61,7 @@ public abstract class BeanPropertyInitializer
 		
 		setProperties(properties);
 		
-		this.instantiationStack = new Stack<Class<?>>();
+		this.instantiationStack = new ArrayDeque<Class<?>>();
 		this.cache = cache;
 	}
 	
@@ -362,5 +363,5 @@ public abstract class BeanPropertyInitializer
 				return null;
 			}
 		}
-	};
+	}
 }

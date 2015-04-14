@@ -348,5 +348,4 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	{
 		return super.checkForMatchingRule(field.getName(), clazz);
 	}
-	
 }
