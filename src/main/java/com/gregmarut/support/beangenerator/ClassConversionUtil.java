@@ -14,6 +14,11 @@ package com.gregmarut.support.beangenerator;
 
 public class ClassConversionUtil
 {
+	private ClassConversionUtil()
+	{
+		
+	}
+	
 	/**
 	 * Converts a primitive data type to its corresponding object class
 	 * 

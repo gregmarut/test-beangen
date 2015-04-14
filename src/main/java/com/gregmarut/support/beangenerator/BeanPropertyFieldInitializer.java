@@ -17,15 +17,18 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
-import com.gregmarut.support.beangenerator.cache.CacheManager;
+import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.rule.Rule;
 
 /**
- * This class is responsible for the actual initialization of a bean object. It uses reflection to
- * cascade an object looking for all declared fields and create a new instance of that class.
+ * This class is responsible for the actual initialization of a bean object. It uses reflection to cascade an object
+ * looking for all declared fields and create a new instance of that class.
  * 
  * @author Greg Marut
  */
@@ -36,21 +39,49 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	 * 
 	 * @param properties
 	 */
-	BeanPropertyFieldInitializer(final Properties properties)
+	BeanPropertyFieldInitializer(final Properties properties, final Cache cache)
 	{
-		super(properties);
+		super(properties, cache);
 	}
 	
 	protected void populate(final Object object)
 	{
 		// retrieve a list of all of the methods defined in this class
-		Field[] fields = object.getClass().getDeclaredFields();
+		Field[] fields = getAllFields(object);
 		
 		// set the data on the object
 		setData(object, fields);
 		
 		// populate the collections in this object with test data
 		populateCollections(object, fields);
+	}
+	
+	/**
+	 * Retrieve all of the fields for a given object including any parent classes
+	 * 
+	 * @param object
+	 * @return
+	 */
+	private Field[] getAllFields(final Object object)
+	{
+		// holds the list of fields
+		List<Field> allFields = new ArrayList<Field>();
+		
+		// holds the class to inspect
+		Class<?> clazz = object.getClass();
+		
+		// while the class is not null
+		while (null != clazz)
+		{
+			// retrieve all of the declared field for this class and add them to the list
+			Field[] fields = clazz.getDeclaredFields();
+			allFields.addAll(Arrays.asList(fields));
+			
+			// read this class' superclass next if one exists
+			clazz = clazz.getSuperclass();
+		}
+		
+		return allFields.toArray(new Field[allFields.size()]);
 	}
 	
 	/**
@@ -108,7 +139,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					// However, some other fields in the object that are not of type JAXBElement
 					// will get set, and depending on the test case, this may be fine.
 					logger.info("Could not intialize property named: {} of type: {} in object of type: {}",
-						field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
+							field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
 				}
 				catch (IllegalArgumentException e)
 				{
@@ -132,7 +163,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	private Object getValue(final Field field, final Class<?> clazz) throws InstantiationException,
-		IllegalAccessException
+			IllegalAccessException
 	{
 		// holds the value of the object to return
 		final Object value;
@@ -187,7 +218,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					// check to see if caching is enabled
 					if (properties.isCache())
 					{
-						value = CacheManager.getInstance().getOrRetieve(clazz, retrieve);
+						value = cache.getOrRetieve(clazz, retrieve);
 					}
 					else
 					{
@@ -205,8 +236,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	}
 	
 	/**
-	 * Searches all of the fields of a class and attempts to pick out the fields that return a
-	 * collection. For each
+	 * Searches all of the fields of a class and attempts to pick out the fields that return a collection. For each
 	 * collection found, this method populates it with test data
 	 * 
 	 * @param fields
@@ -254,7 +284,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 									final Class<?> clazz = (Class<?>) parameterizedTypes.getActualTypeArguments()[0];
 									
 									logger.debug("Populating " + collection.getClass().getName()
-										+ " with objects of type " + clazz.getName());
+											+ " with objects of type " + clazz.getName());
 									
 									// for the specific number of times to auto fill lists
 									for (int i = 0; i < properties.getCollectionAutoFillCount(); i++)
@@ -269,7 +299,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 										// check to see if caching is enabled
 										if (properties.isCache())
 										{
-											object = CacheManager.getInstance().getOrRetieve(clazz, retrieve);
+											object = cache.getOrRetieve(clazz, retrieve);
 										}
 										else
 										{
@@ -287,8 +317,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 								else
 								{
 									logger.debug("Could not populate the list of "
-										+ parameterizedTypes.getActualTypeArguments()[0].toString()
-										+ " because the parameterized type could not be converted to an object.");
+											+ parameterizedTypes.getActualTypeArguments()[0].toString()
+											+ " because the parameterized type could not be converted to an object.");
 								}
 							}
 						}
@@ -307,8 +337,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule}
-	 * that match this
+	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule} that match this
 	 * specific field name. If a match is found, the {@link Rule} is returned.
 	 * 
 	 * @param field
@@ -319,5 +348,4 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	{
 		return super.checkForMatchingRule(field.getName(), clazz);
 	}
-	
 }

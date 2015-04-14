@@ -50,10 +50,8 @@ public class GetterSetterTester
 	
 	/**
 	 * Execute the GetterSetter tests on the target class
-	 * 
-	 * @throws ValueMismatchException
 	 */
-	public void execute(final Class<?>... targetClasses) throws ValueMismatchException
+	public void execute(final Class<?>... targetClasses)
 	{
 		// make sure the classes is not null
 		if (null != targetClasses)
@@ -76,10 +74,8 @@ public class GetterSetterTester
 	
 	/**
 	 * Execute the GetterSetter tests on the target object
-	 * 
-	 * @throws ValueMismatchException
 	 */
-	public void executeObject(final Object target) throws ValueMismatchException
+	public void executeObject(final Object target)
 	{
 		// make sure the target is not null
 		if (null != target)
@@ -134,8 +130,7 @@ public class GetterSetterTester
 				}
 				catch (NoSuchMethodException e)
 				{
-					// this field does not have getter and setter methods for it, therefore ignore
-					// it
+					logger.info(e.getMessage(), e);
 				}
 				catch (IllegalArgumentException e)
 				{
@@ -167,7 +162,7 @@ public class GetterSetterTester
 	 * @throws NoSuchMethodException
 	 */
 	private Method findGetterMethod(final Object target, final Field field) throws SecurityException,
-		NoSuchMethodException
+			NoSuchMethodException
 	{
 		// create the getter field name
 		String getterFieldName;
@@ -196,7 +191,7 @@ public class GetterSetterTester
 	 * @throws NoSuchMethodException
 	 */
 	private Method findSetterMethod(final Object target, final Field field) throws SecurityException,
-		NoSuchMethodException
+			NoSuchMethodException
 	{
 		// create the setter field name
 		String setterFieldName = convertFieldToMethod(SETTER_PREFIX, field.getName());

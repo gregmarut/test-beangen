@@ -18,10 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CacheManager
+public final class Cache
 {
-	private static CacheManager instance;
-	
 	// ** Objects **//
 	// instantiate the logger
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -29,7 +27,7 @@ public final class CacheManager
 	// holds the map that will store cached objects
 	private final Map<Class<?>, Object> beanCache;
 	
-	private CacheManager()
+	public Cache()
 	{
 		beanCache = new ConcurrentHashMap<Class<?>, Object>();
 	}
@@ -53,7 +51,11 @@ public final class CacheManager
 	 */
 	public void put(final Class<?> key, final Object value)
 	{
-		beanCache.put(key, value);
+		// make sure the key and value are not null
+		if (null != key && null != value)
+		{
+			beanCache.put(key, value);
+		}
 	}
 	
 	/**
@@ -94,16 +96,5 @@ public final class CacheManager
 		}
 		
 		return object;
-	}
-	
-	public static synchronized CacheManager getInstance()
-	{
-		// check to see if the instance needs to be instantiated
-		if (null == instance)
-		{
-			instance = new CacheManager();
-		}
-		
-		return instance;
 	}
 }
