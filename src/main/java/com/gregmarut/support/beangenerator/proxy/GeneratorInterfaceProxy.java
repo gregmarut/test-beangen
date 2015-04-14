@@ -37,18 +37,18 @@ public class GeneratorInterfaceProxy implements InvocationHandler
 	 * Creates a new proxy class for this handler.
 	 * 
 	 * @param interfaces
-	 * Must be interfaces and not classes
+	 *            Must be interfaces and not classes
 	 * @return New proxy classes
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T createProxy(final Properties properties, final Class<?>... interfaces)
 	{
 		// create the new BeanPropertyGenerator with caching enabled
-		BeanPropertyGenerator beanPropertyGenerator = new BeanPropertyGenerator(true, true, properties);
+		BeanPropertyGenerator beanPropertyGenerator = new BeanPropertyGenerator(properties);
 		
 		// create a new proxy instance
 		return (T) Proxy.newProxyInstance(GetSetInterfaceProxy.class.getClassLoader(), interfaces,
-			new GeneratorInterfaceProxy(beanPropertyGenerator));
+				new GeneratorInterfaceProxy(beanPropertyGenerator));
 	}
 	
 	@Override

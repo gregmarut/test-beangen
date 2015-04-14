@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import com.gregmarut.support.beangenerator.cache.CacheManager;
+import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.rule.Rule;
 
@@ -39,9 +39,9 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	 * 
 	 * @param properties
 	 */
-	BeanPropertyFieldInitializer(final Properties properties)
+	BeanPropertyFieldInitializer(final Properties properties, final Cache cache)
 	{
-		super(properties);
+		super(properties, cache);
 	}
 	
 	protected void populate(final Object object)
@@ -218,7 +218,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					// check to see if caching is enabled
 					if (properties.isCache())
 					{
-						value = CacheManager.getInstance().getOrRetieve(clazz, retrieve);
+						value = cache.getOrRetieve(clazz, retrieve);
 					}
 					else
 					{
@@ -299,7 +299,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 										// check to see if caching is enabled
 										if (properties.isCache())
 										{
-											object = CacheManager.getInstance().getOrRetieve(clazz, retrieve);
+											object = cache.getOrRetieve(clazz, retrieve);
 										}
 										else
 										{

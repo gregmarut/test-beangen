@@ -19,14 +19,13 @@ import java.util.Stack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gregmarut.support.beangenerator.cache.CacheManager;
+import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.proxy.GeneratorInterfaceProxy;
 import com.gregmarut.support.beangenerator.rule.Rule;
 
 /**
- * This class is responsible for the actual initialization of a bean object. It uses reflection to
- * cascade an object and
+ * This class is responsible for the actual initialization of a bean object. It uses reflection to cascade an object and
  * populate its fields
  * 
  * @author Greg Marut
@@ -39,6 +38,9 @@ public abstract class BeanPropertyInitializer
 	
 	protected Properties properties;
 	
+	// holds the cache for this BeanPropertyGenerator
+	protected final Cache cache;
+	
 	// holds the stack of instantiated classes to detect and prevent infinite
 	// loops
 	protected final Stack<Class<?>> instantiationStack;
@@ -48,7 +50,7 @@ public abstract class BeanPropertyInitializer
 	 * 
 	 * @param properties
 	 */
-	BeanPropertyInitializer(final Properties properties)
+	BeanPropertyInitializer(final Properties properties, final Cache cache)
 	{
 		// make sure the properties are not null
 		if (null == properties)
@@ -59,11 +61,11 @@ public abstract class BeanPropertyInitializer
 		setProperties(properties);
 		
 		this.instantiationStack = new Stack<Class<?>>();
+		this.cache = cache;
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are
-	 * also instantiated.
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated.
 	 * 
 	 * @param clazz
 	 * @return Object
@@ -76,8 +78,7 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are
-	 * also instantiated
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated
 	 * provided the populate boolean is set to true.
 	 * 
 	 * @param clazz
@@ -87,9 +88,9 @@ public abstract class BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	final <T> T initialize(final Class<T> clazz, final boolean populate) throws InstantiationException,
-		IllegalAccessException
+			IllegalAccessException
 	{
-		logger.debug("Initializing ", clazz.getName());
+		logger.debug("Initializing {}", clazz.getName());
 		
 		// holds the object to return
 		final T object;
@@ -107,7 +108,7 @@ public abstract class BeanPropertyInitializer
 				logger.debug("Adding " + clazz.getName() + " to the cache");
 				
 				// add this object to the model map
-				CacheManager.getInstance().put(clazz, object);
+				cache.put(clazz, object);
 			}
 			
 			// make sure the new object is not null
@@ -133,7 +134,7 @@ public abstract class BeanPropertyInitializer
 		{
 			// an infinite loop was detected
 			logger.info("Cyclical dependency detected while attempting to initialize " + clazz.getName()
-				+ ". Skipping object population.");
+					+ ". Skipping object population.");
 			object = null;
 		}
 		
@@ -174,8 +175,7 @@ public abstract class BeanPropertyInitializer
 	protected abstract void populate(final Object object);
 	
 	/**
-	 * Instantiates a new instance of the class. If the class is an interface, this method will
-	 * attempt to lookup the
+	 * Instantiates a new instance of the class. If the class is an interface, this method will attempt to lookup the
 	 * corresponding concrete class in the {@link InterfaceMapper}.
 	 * 
 	 * @param clazz
@@ -215,7 +215,7 @@ public abstract class BeanPropertyInitializer
 				else
 				{
 					throw new InstantiationException("Interface " + clazz.getName()
-						+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
+							+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
 				}
 			}
 		}
@@ -265,8 +265,7 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule}
-	 * that match this
+	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule} that match this
 	 * specific setter method. If a match is found, the {@link Rule} is returned.
 	 * 
 	 * @param name
