@@ -1,6 +1,9 @@
 # test-beangen
 Supports unit testing by dynamically creating bean objects and populating their fields to default values.
 
+Maven Repository:
+http://mvnrepository.com/artifact/com.gregmarut.support/test-beangen
+
 ##Getting Started
 The easiest way to use the framework is to create a new BeanPropertyGenerator object and call the .get(<Class>) method while passing in the class that you would like to be fully populated. The bean generator will then attempt to instantiate the class and traverse the entire object graph and recursively initialize all of the fields. It will then return an object with all of its fields initialized according to the default values or Rules (if any have been specified)
 
