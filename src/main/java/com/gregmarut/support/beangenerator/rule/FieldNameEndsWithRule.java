@@ -12,9 +12,16 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.rule;
 
+import com.gregmarut.support.beangenerator.value.Value;
+
 public class FieldNameEndsWithRule<V> extends FieldNameRule<V>
 {
 	public FieldNameEndsWithRule(final String pattern, final V value)
+	{
+		super(pattern, value);
+	}
+	
+	public FieldNameEndsWithRule(final String pattern, final Value<V> value)
 	{
 		super(pattern, value);
 	}

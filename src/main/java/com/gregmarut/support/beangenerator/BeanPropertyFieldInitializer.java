@@ -25,9 +25,11 @@ import java.util.List;
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.rule.Rule;
+import com.gregmarut.support.beangenerator.value.Value;
 
 /**
- * This class is responsible for the actual initialization of a bean object. It uses reflection to cascade an object
+ * This class is responsible for the actual initialization of a bean object. It uses reflection to
+ * cascade an object
  * looking for all declared fields and create a new instance of that class.
  * 
  * @author Greg Marut
@@ -121,7 +123,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 						logger.debug("Rule found for \"{}\":{}", field.getName(), clazz.getName());
 						
 						// set the value to the value defined in the rule
-						value = rule.getValue();
+						value = rule.getValue().getValue(field);
 					}
 					
 					// set the value on the object
@@ -139,7 +141,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					// However, some other fields in the object that are not of type JAXBElement
 					// will get set, and depending on the test case, this may be fine.
 					logger.info("Could not intialize property named: {} of type: {} in object of type: {}",
-							field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
+						field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
 				}
 				catch (IllegalArgumentException e)
 				{
@@ -163,43 +165,22 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	private Object getValue(final Field field, final Class<?> clazz) throws InstantiationException,
-			IllegalAccessException
+		IllegalAccessException
 	{
 		// holds the value of the object to return
-		final Object value;
+		final Object obj;
 		
 		// make sure the parameter is not null
 		if (null != clazz)
 		{
-			// check to see if this parameter is a string
-			if (clazz.equals(String.class))
-			{
-				// create the value to assign to this string field
-				String stringValue;
-				
-				// check to see if the default string should be used
-				if (null == properties.getDefaultValues().get(String.class))
-				{
-					// assign the value to the field name
-					stringValue = field.getName();
-				}
-				else
-				{
-					// assign the value to the user specified default string
-					stringValue = (String) properties.getDefaultValues().get(String.class);
-				}
-				
-				// set the value to this string
-				value = stringValue;
-			}
 			// check to see if this parameter is a type of collection
-			else if (Collection.class.isAssignableFrom(clazz))
+			if (Collection.class.isAssignableFrom(clazz))
 			{
 				// instantiate a new collection object
 				Collection<?> collection = (Collection<?>) instantiate(clazz);
 				
 				// assign the collection as the object to set into the method
-				value = collection;
+				obj = collection;
 			}
 			else
 			{
@@ -208,7 +189,17 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 				{
 					logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
 					
-					value = properties.getDefaultValues().get(clazz);
+					Value<?> value = properties.getDefaultValues().get(clazz);
+					
+					// make sure the value is not null
+					if (null != value)
+					{
+						obj = value.getValue(field);
+					}
+					else
+					{
+						obj = null;
+					}
 				}
 				else
 				{
@@ -218,25 +209,26 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					// check to see if caching is enabled
 					if (properties.isCache())
 					{
-						value = cache.getOrRetieve(clazz, retrieve);
+						obj = cache.getOrRetieve(clazz, retrieve);
 					}
 					else
 					{
-						value = retrieve.retrieve();
+						obj = retrieve.retrieve();
 					}
 				}
 			}
 		}
 		else
 		{
-			value = null;
+			obj = null;
 		}
 		
-		return value;
+		return obj;
 	}
 	
 	/**
-	 * Searches all of the fields of a class and attempts to pick out the fields that return a collection. For each
+	 * Searches all of the fields of a class and attempts to pick out the fields that return a
+	 * collection. For each
 	 * collection found, this method populates it with test data
 	 * 
 	 * @param fields
@@ -284,7 +276,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 									final Class<?> clazz = (Class<?>) parameterizedTypes.getActualTypeArguments()[0];
 									
 									logger.debug("Populating " + collection.getClass().getName()
-											+ " with objects of type " + clazz.getName());
+										+ " with objects of type " + clazz.getName());
 									
 									// for the specific number of times to auto fill lists
 									for (int i = 0; i < properties.getCollectionAutoFillCount(); i++)
@@ -317,8 +309,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 								else
 								{
 									logger.debug("Could not populate the list of "
-											+ parameterizedTypes.getActualTypeArguments()[0].toString()
-											+ " because the parameterized type could not be converted to an object.");
+										+ parameterizedTypes.getActualTypeArguments()[0].toString()
+										+ " because the parameterized type could not be converted to an object.");
 								}
 							}
 						}
@@ -337,7 +329,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule} that match this
+	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule}
+	 * that match this
 	 * specific field name. If a match is found, the {@link Rule} is returned.
 	 * 
 	 * @param field

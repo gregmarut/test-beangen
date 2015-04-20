@@ -21,8 +21,7 @@ import org.junit.Test;
 
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
-import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.DefaultValues;
+import com.gregmarut.support.beangenerator.value.StaticValue;
 
 /**
  * This class demonstrates how to use the BeanPropertyGenerator while changing the default values
@@ -49,7 +48,7 @@ public class DefaultValuesTest
 		defaultValues.put(int.class, 42);
 		
 		// change the default value of AnotherTestObject to be set to null
-		defaultValues.put(AnotherTestBean.class, null);
+		defaultValues.put(AnotherTestBean.class, new StaticValue<AnotherTestBean>(null, AnotherTestBean.class));
 		
 		// set the default values object into the bean property generator
 		beanPropertyGenerator.getProperties().setDefaultValues(defaultValues);
