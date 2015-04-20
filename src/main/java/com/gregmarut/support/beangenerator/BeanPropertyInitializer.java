@@ -244,7 +244,7 @@ public abstract class BeanPropertyInitializer
 			{
 				logger.debug("Found default value for " + clazz.getName());
 				
-				newObject = (T) properties.getDefaultValues().get(clazz);
+				newObject = properties.getDefaultValues().get(clazz);
 			}
 			else
 			{
