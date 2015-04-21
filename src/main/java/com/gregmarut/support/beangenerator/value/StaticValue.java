@@ -32,7 +32,7 @@ public class StaticValue<V> implements Value<V>
 	}
 	
 	@Override
-	public V getValue(Field field)
+	public V getValue(final Field field)
 	{
 		return value;
 	}

@@ -57,7 +57,7 @@ public abstract class Rule<V>
 	@SuppressWarnings("unchecked")
 	public Class<V> getReturnType()
 	{
-		return (Class<V>) ClassConversionUtil.convertToNonPrimitive(value.getValue().getClass());
+		return (Class<V>) ClassConversionUtil.convertToNonPrimitive(value.getType());
 	}
 	
 	/**

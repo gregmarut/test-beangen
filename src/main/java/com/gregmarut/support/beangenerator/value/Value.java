@@ -11,7 +11,26 @@ import java.lang.reflect.Field;
  */
 public interface Value<T>
 {
+	/**
+	 * Returns the class for this value
+	 * 
+	 * @return
+	 */
 	Class<T> getType();
+	
+	/**
+	 * Returns the generated value
+	 * 
+	 * @return
+	 */
 	T getValue();
+	
+	/**
+	 * Returns the generated value
+	 * 
+	 * @param field
+	 * the field that this value represents
+	 * @return
+	 */
 	T getValue(Field field);
 }

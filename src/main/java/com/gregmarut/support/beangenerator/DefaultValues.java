@@ -153,12 +153,24 @@ public class DefaultValues
 	@SuppressWarnings("unchecked")
 	public <V> void put(final Class<V> key, final V value)
 	{
+		// make sure the value is not null
+		if (null == value)
+		{
+			throw new IllegalArgumentException("value cannot be null.");
+		}
+		
 		// create a new value object
 		map.put(key, new StaticValue<V>(value, (Class<V>) value.getClass()));
 	}
 	
 	public <V> void put(final Class<V> key, final Value<V> value)
 	{
+		// make sure the value is not null
+		if (null == value)
+		{
+			throw new IllegalArgumentException("value cannot be null.");
+		}
+		
 		// create a new value object
 		map.put(key, value);
 	}

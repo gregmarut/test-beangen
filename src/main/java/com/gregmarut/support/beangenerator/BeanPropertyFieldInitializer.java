@@ -25,7 +25,6 @@ import java.util.List;
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.rule.Rule;
-import com.gregmarut.support.beangenerator.value.Value;
 
 /**
  * This class is responsible for the actual initialization of a bean object. It uses reflection to
@@ -189,17 +188,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 				{
 					logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
 					
-					Value<?> value = properties.getDefaultValues().get(clazz);
-					
-					// make sure the value is not null
-					if (null != value)
-					{
-						obj = value.getValue(field);
-					}
-					else
-					{
-						obj = null;
-					}
+					// retrieve the default value
+					obj = properties.getDefaultValues().get(clazz).getValue(field);
 				}
 				else
 				{
