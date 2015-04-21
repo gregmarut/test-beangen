@@ -26,7 +26,8 @@ import com.gregmarut.support.beangenerator.proxy.GeneratorInterfaceProxy;
 import com.gregmarut.support.beangenerator.rule.Rule;
 
 /**
- * This class is responsible for the actual initialization of a bean object. It uses reflection to cascade an object and
+ * This class is responsible for the actual initialization of a bean object. It uses reflection to
+ * cascade an object and
  * populate its fields
  * 
  * @author Greg Marut
@@ -66,7 +67,8 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated.
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are
+	 * also instantiated.
 	 * 
 	 * @param clazz
 	 * @return Object
@@ -79,7 +81,8 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are
+	 * also instantiated
 	 * provided the populate boolean is set to true.
 	 * 
 	 * @param clazz
@@ -89,7 +92,7 @@ public abstract class BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	final <T> T initialize(final Class<T> clazz, final boolean populate) throws InstantiationException,
-			IllegalAccessException
+		IllegalAccessException
 	{
 		logger.debug("Initializing {}", clazz.getName());
 		
@@ -135,7 +138,7 @@ public abstract class BeanPropertyInitializer
 		{
 			// an infinite loop was detected
 			logger.info("Cyclical dependency detected while attempting to initialize " + clazz.getName()
-					+ ". Skipping object population.");
+				+ ". Skipping object population.");
 			object = null;
 		}
 		
@@ -176,7 +179,8 @@ public abstract class BeanPropertyInitializer
 	protected abstract void populate(final Object object);
 	
 	/**
-	 * Instantiates a new instance of the class. If the class is an interface, this method will attempt to lookup the
+	 * Instantiates a new instance of the class. If the class is an interface, this method will
+	 * attempt to lookup the
 	 * corresponding concrete class in the {@link InterfaceMapper}.
 	 * 
 	 * @param clazz
@@ -216,7 +220,7 @@ public abstract class BeanPropertyInitializer
 				else
 				{
 					throw new InstantiationException("Interface " + clazz.getName()
-							+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
+						+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
 				}
 			}
 		}
@@ -244,7 +248,8 @@ public abstract class BeanPropertyInitializer
 			{
 				logger.debug("Found default value for " + clazz.getName());
 				
-				newObject = (T) properties.getDefaultValues().get(clazz);
+				// retrieve the default value
+				newObject = properties.getDefaultValues().get(clazz).getValue();
 			}
 			else
 			{
@@ -266,7 +271,8 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule} that match this
+	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule}
+	 * that match this
 	 * specific setter method. If a match is found, the {@link Rule} is returned.
 	 * 
 	 * @param name

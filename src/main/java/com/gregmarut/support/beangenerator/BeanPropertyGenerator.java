@@ -56,7 +56,7 @@ public final class BeanPropertyGenerator
 	private final Properties properties;
 	
 	/**
-	 * Constructs a new BeanPropertyGenerator object Bean caching is disabled by default
+	 * Constructs a new BeanPropertyGenerator object Bean caching is enabled by default
 	 */
 	public BeanPropertyGenerator()
 	{
@@ -184,7 +184,7 @@ public final class BeanPropertyGenerator
 	 *            The class to instantiate
 	 * @return
 	 */
-	public List<?> getList(final Class<?> clazz)
+	public <T> List<T> getList(final Class<T> clazz)
 	{
 		return getList(clazz, properties.getCollectionAutoFillCount());
 	}
@@ -198,14 +198,14 @@ public final class BeanPropertyGenerator
 	 *            How many objects to put into the list
 	 * @return
 	 */
-	public List<?> getList(final Class<?> clazz, final int count)
+	public <T> List<T> getList(final Class<T> clazz, final int count)
 	{
-		List<Object> list = new ArrayList<Object>(count);
+		List<T> list = new ArrayList<T>(count);
 		
 		for (int i = 0; i < count; i++)
 		{
 			// get a new populated instance of the object
-			Object obj = get(clazz);
+			T obj = get(clazz);
 			
 			// add the object to the list
 			list.add(obj);

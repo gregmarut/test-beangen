@@ -12,10 +12,33 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.rule;
 
+import com.gregmarut.support.beangenerator.value.Value;
+
 public abstract class FieldNameRule<V> extends Rule<V>
 {
 	// holds the pattern of the field name to match
 	protected final String pattern;
+	
+	/**
+	 * Creates a new simple Rule to check the pattern against the field name
+	 * 
+	 * @param pattern
+	 * @param value
+	 */
+	public FieldNameRule(final String pattern, final Value<V> value)
+	{
+		super(value);
+		
+		// make sure the field name is not null
+		if (null != pattern)
+		{
+			this.pattern = pattern;
+		}
+		else
+		{
+			throw new IllegalArgumentException("pattern cannot be null.");
+		}
+	}
 	
 	/**
 	 * Creates a new simple Rule to check the pattern against the field name
@@ -34,7 +57,7 @@ public abstract class FieldNameRule<V> extends Rule<V>
 		}
 		else
 		{
-			throw new IllegalArgumentException("FieldName cannot be null.");
+			throw new IllegalArgumentException("pattern cannot be null.");
 		}
 	}
 }

@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.gregmarut.support.bean.AnotherTestBean;
+import com.gregmarut.support.bean.ChildBean;
 import com.gregmarut.support.bean.TestBean;
 
 public class TestGetterSetterTester
@@ -33,5 +34,6 @@ public class TestGetterSetterTester
 	{
 		getterSetterTester.execute(TestBean.class);
 		getterSetterTester.execute(AnotherTestBean.class);
+		getterSetterTester.execute(ChildBean.class);
 	}
 }

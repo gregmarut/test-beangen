@@ -16,6 +16,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.gregmarut.support.beangenerator.value.StaticValue;
+import com.gregmarut.support.beangenerator.value.StringValue;
+import com.gregmarut.support.beangenerator.value.Value;
+
 /**
  * <pre>
  * A map of classes that hold the default objects for setting on fields in 
@@ -28,11 +32,8 @@ import java.util.Map;
  * 
  * @author Greg Marut
  */
-public class DefaultValues extends HashMap<Class<?>, Object>
+public class DefaultValues
 {
-	// ** Finals **//
-	private static final long serialVersionUID = 5182886309843090046L;
-	
 	// holds the initial default values
 	public static final Integer DEFAULT_INTEGER = 1;
 	public static final Short DEFAULT_SHORT = 1;
@@ -45,101 +46,113 @@ public class DefaultValues extends HashMap<Class<?>, Object>
 	public static final Date DEFAULT_DATE = new Date();
 	public static final Class<?> DEFAULT_CLASS = Class.class;
 	
+	// holds the map that stores the class to value mapping
+	private final Map<Class<?>, Value<?>> map;
+	
 	/**
 	 * Constructs the default values map
 	 */
 	public DefaultValues()
 	{
-		super.put(Integer.class, DEFAULT_INTEGER);
-		super.put(Integer[].class, new Integer[]
-		{
-			DEFAULT_INTEGER
-		});
-		super.put(int.class, DEFAULT_INTEGER);
-		super.put(int[].class, new int[]
-		{
-			DEFAULT_INTEGER
-		});
+		map = new HashMap<Class<?>, Value<?>>();
 		
-		super.put(Short.class, DEFAULT_SHORT);
-		super.put(Short[].class, new Short[]
-		{
-			DEFAULT_SHORT
-		});
-		super.put(short.class, DEFAULT_SHORT);
-		super.put(short[].class, new short[]
-		{
-			DEFAULT_SHORT
-		});
+		// add the default values to the map
+		setupDefaultValues();
+	}
+	
+	/**
+	 * Sets up the map with all of the default values
+	 */
+	protected void setupDefaultValues()
+	{
+		put(String.class, new StringValue());
 		
-		super.put(Float.class, DEFAULT_FLOAT);
-		super.put(Float[].class, new Float[]
-		{
-			DEFAULT_FLOAT
-		});
-		super.put(float.class, DEFAULT_FLOAT);
-		super.put(float[].class, new float[]
-		{
-			DEFAULT_FLOAT
-		});
+		put(Integer.class, DEFAULT_INTEGER);
+		put(Integer[].class, new Integer[] { DEFAULT_INTEGER });
+		put(int.class, DEFAULT_INTEGER);
+		put(int[].class, new int[] { DEFAULT_INTEGER });
 		
-		super.put(Double.class, DEFAULT_DOUBLE);
-		super.put(Double[].class, new Double[]
-		{
-			DEFAULT_DOUBLE
-		});
-		super.put(double.class, DEFAULT_DOUBLE);
-		super.put(double[].class, new double[]
-		{
-			DEFAULT_DOUBLE
-		});
+		put(Short.class, DEFAULT_SHORT);
+		put(Short[].class, new Short[] { DEFAULT_SHORT });
+		put(short.class, DEFAULT_SHORT);
+		put(short[].class, new short[] { DEFAULT_SHORT });
 		
-		super.put(Long.class, DEFAULT_LONG);
-		super.put(Long[].class, new Long[]
-		{
-			DEFAULT_LONG
-		});
-		super.put(long.class, DEFAULT_LONG);
-		super.put(long[].class, new long[]
-		{
-			DEFAULT_LONG
-		});
+		put(Float.class, DEFAULT_FLOAT);
+		put(Float[].class, new Float[] { DEFAULT_FLOAT });
+		put(float.class, DEFAULT_FLOAT);
+		put(float[].class, new float[] { DEFAULT_FLOAT });
 		
-		super.put(Boolean.class, DEFAULT_BOOLEAN);
-		super.put(Boolean[].class, new Boolean[]
-		{
-			DEFAULT_BOOLEAN
-		});
-		super.put(boolean.class, DEFAULT_BOOLEAN);
-		super.put(boolean[].class, new boolean[]
-		{
-			DEFAULT_BOOLEAN
-		});
+		put(Double.class, DEFAULT_DOUBLE);
+		put(Double[].class, new Double[] { DEFAULT_DOUBLE });
+		put(double.class, DEFAULT_DOUBLE);
+		put(double[].class, new double[] { DEFAULT_DOUBLE });
 		
-		super.put(Byte.class, DEFAULT_BYTE);
-		super.put(Byte[].class, new Byte[]
-		{
-			DEFAULT_BYTE
-		});
-		super.put(byte.class, DEFAULT_BYTE);
-		super.put(byte[].class, new byte[]
-		{
-			DEFAULT_BYTE
-		});
+		put(Long.class, DEFAULT_LONG);
+		put(Long[].class, new Long[] { DEFAULT_LONG });
+		put(long.class, DEFAULT_LONG);
+		put(long[].class, new long[] { DEFAULT_LONG });
 		
-		super.put(Character.class, DEFAULT_CHARACTER);
-		super.put(Character[].class, new Character[]
-		{
-			DEFAULT_CHARACTER
-		});
-		super.put(char.class, DEFAULT_CHARACTER);
-		super.put(char[].class, new char[]
-		{
-			DEFAULT_CHARACTER
-		});
+		put(Boolean.class, DEFAULT_BOOLEAN);
+		put(Boolean[].class, new Boolean[] { DEFAULT_BOOLEAN });
+		put(boolean.class, DEFAULT_BOOLEAN);
+		put(boolean[].class, new boolean[] { DEFAULT_BOOLEAN });
 		
-		super.put(Date.class, DEFAULT_DATE);
+		put(Byte.class, DEFAULT_BYTE);
+		put(Byte[].class, new Byte[] { DEFAULT_BYTE });
+		put(byte.class, DEFAULT_BYTE);
+		put(byte[].class, new byte[] { DEFAULT_BYTE });
 		
-		super.put(Class.class, DEFAULT_CLASS);
+		put(Character.class, DEFAULT_CHARACTER);
+		put(Character[].class, new Character[] { DEFAULT_CHARACTER });
+		put(char.class, DEFAULT_CHARACTER);
+		put(char[].class, new char[] { DEFAULT_CHARACTER });
+		
+		put(Date.class, DEFAULT_DATE);
+		
+		put(Class.class, DEFAULT_CLASS);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public final <V> void put(final Class<V> key, final V value)
+	{
+		// make sure the value is not null
+		if (null == value)
+		{
+			throw new IllegalArgumentException("value cannot be null.");
+		}
+		
+		// create a new value object
+		map.put(key, new StaticValue<V>(value, (Class<V>) value.getClass()));
+	}
+	
+	public final <V> void put(final Class<V> key, final Value<V> value)
+	{
+		// make sure the value is not null
+		if (null == value)
+		{
+			throw new IllegalArgumentException("value cannot be null.");
+		}
+		
+		// create a new value object
+		map.put(key, value);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public final <V> Value<V> get(final Class<V> key)
+	{
+		// retrieve the value object from the map
+		return (Value<V>) map.get(key);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public final <V> Value<V> remove(final Class<V> key)
+	{
+		// remove the object from the map if it exists
+		return (Value<V>) map.remove(key);
+	}
+	
+	public final boolean containsKey(final Class<?> key)
+	{
+		return map.containsKey(key);
 	}
 }
