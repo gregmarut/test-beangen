@@ -2,6 +2,12 @@ package com.gregmarut.support.beangenerator.value;
 
 import java.lang.reflect.Field;
 
+/**
+ * Represents a null value
+ * 
+ * @author Greg Marut
+ * @param <V>
+ */
 public class NullValue<V> implements Value<V>
 {
 	private final Class<V> type;
