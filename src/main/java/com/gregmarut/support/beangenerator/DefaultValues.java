@@ -46,6 +46,7 @@ public class DefaultValues
 	public static final Date DEFAULT_DATE = new Date();
 	public static final Class<?> DEFAULT_CLASS = Class.class;
 	
+	// holds the map that stores the class to value mapping
 	private final Map<Class<?>, Value<?>> map;
 	
 	/**
@@ -55,95 +56,56 @@ public class DefaultValues
 	{
 		map = new HashMap<Class<?>, Value<?>>();
 		
+		// add the default values to the map
+		setupDefaultValues();
+	}
+	
+	/**
+	 * Sets up the map with all of the default values
+	 */
+	protected void setupDefaultValues()
+	{
 		put(String.class, new StringValue());
 		
 		put(Integer.class, DEFAULT_INTEGER);
-		put(Integer[].class, new Integer[]
-		{
-			DEFAULT_INTEGER
-		});
+		put(Integer[].class, new Integer[] { DEFAULT_INTEGER });
 		put(int.class, DEFAULT_INTEGER);
-		put(int[].class, new int[]
-		{
-			DEFAULT_INTEGER
-		});
+		put(int[].class, new int[] { DEFAULT_INTEGER });
 		
 		put(Short.class, DEFAULT_SHORT);
-		put(Short[].class, new Short[]
-		{
-			DEFAULT_SHORT
-		});
+		put(Short[].class, new Short[] { DEFAULT_SHORT });
 		put(short.class, DEFAULT_SHORT);
-		put(short[].class, new short[]
-		{
-			DEFAULT_SHORT
-		});
+		put(short[].class, new short[] { DEFAULT_SHORT });
 		
 		put(Float.class, DEFAULT_FLOAT);
-		put(Float[].class, new Float[]
-		{
-			DEFAULT_FLOAT
-		});
+		put(Float[].class, new Float[] { DEFAULT_FLOAT });
 		put(float.class, DEFAULT_FLOAT);
-		put(float[].class, new float[]
-		{
-			DEFAULT_FLOAT
-		});
+		put(float[].class, new float[] { DEFAULT_FLOAT });
 		
 		put(Double.class, DEFAULT_DOUBLE);
-		put(Double[].class, new Double[]
-		{
-			DEFAULT_DOUBLE
-		});
+		put(Double[].class, new Double[] { DEFAULT_DOUBLE });
 		put(double.class, DEFAULT_DOUBLE);
-		put(double[].class, new double[]
-		{
-			DEFAULT_DOUBLE
-		});
+		put(double[].class, new double[] { DEFAULT_DOUBLE });
 		
 		put(Long.class, DEFAULT_LONG);
-		put(Long[].class, new Long[]
-		{
-			DEFAULT_LONG
-		});
+		put(Long[].class, new Long[] { DEFAULT_LONG });
 		put(long.class, DEFAULT_LONG);
-		put(long[].class, new long[]
-		{
-			DEFAULT_LONG
-		});
+		put(long[].class, new long[] { DEFAULT_LONG });
 		
 		put(Boolean.class, DEFAULT_BOOLEAN);
-		put(Boolean[].class, new Boolean[]
-		{
-			DEFAULT_BOOLEAN
-		});
+		put(Boolean[].class, new Boolean[] { DEFAULT_BOOLEAN });
 		put(boolean.class, DEFAULT_BOOLEAN);
-		put(boolean[].class, new boolean[]
-		{
-			DEFAULT_BOOLEAN
-		});
+		put(boolean[].class, new boolean[] { DEFAULT_BOOLEAN });
 		
 		put(Byte.class, DEFAULT_BYTE);
-		put(Byte[].class, new Byte[]
-		{
-			DEFAULT_BYTE
-		});
+		put(Byte[].class, new Byte[] { DEFAULT_BYTE });
 		put(byte.class, DEFAULT_BYTE);
-		put(byte[].class, new byte[]
-		{
-			DEFAULT_BYTE
-		});
+		put(byte[].class, new byte[] { DEFAULT_BYTE });
 		
 		put(Character.class, DEFAULT_CHARACTER);
-		put(Character[].class, new Character[]
-		{
-			DEFAULT_CHARACTER
-		});
+		put(Character[].class, new Character[] { DEFAULT_CHARACTER });
 		put(char.class, DEFAULT_CHARACTER);
-		put(char[].class, new char[]
-		{
-			DEFAULT_CHARACTER
-		});
+		put(char[].class, new char[] { DEFAULT_CHARACTER });
 		
 		put(Date.class, DEFAULT_DATE);
 		
@@ -151,7 +113,7 @@ public class DefaultValues
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <V> void put(final Class<V> key, final V value)
+	public final <V> void put(final Class<V> key, final V value)
 	{
 		// make sure the value is not null
 		if (null == value)
@@ -163,7 +125,7 @@ public class DefaultValues
 		map.put(key, new StaticValue<V>(value, (Class<V>) value.getClass()));
 	}
 	
-	public <V> void put(final Class<V> key, final Value<V> value)
+	public final <V> void put(final Class<V> key, final Value<V> value)
 	{
 		// make sure the value is not null
 		if (null == value)
@@ -176,14 +138,20 @@ public class DefaultValues
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <V> Value<V> get(final Class<V> key)
+	public final <V> Value<V> get(final Class<V> key)
 	{
 		// retrieve the value object from the map
-		Value<V> value = (Value<V>) map.get(key);
-		return value;
+		return (Value<V>) map.get(key);
 	}
 	
-	public boolean containsKey(final Class<?> key)
+	@SuppressWarnings("unchecked")
+	public final <V> Value<V> remove(final Class<V> key)
+	{
+		// remove the object from the map if it exists
+		return (Value<V>) map.remove(key);
+	}
+	
+	public final boolean containsKey(final Class<?> key)
 	{
 		return map.containsKey(key);
 	}
