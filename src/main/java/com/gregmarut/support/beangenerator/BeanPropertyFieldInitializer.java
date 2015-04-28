@@ -167,7 +167,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
 					
 					// check to see if caching is enabled
-					if (configuration.isCache())
+					if (configuration.useCache(clazz))
 					{
 						obj = cache.getOrRetieve(clazz, retrieve);
 					}
@@ -248,7 +248,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 										Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
 										
 										// check to see if caching is enabled
-										if (configuration.isCache())
+										if (configuration.useCache(clazz))
 										{
 											object = cache.getOrRetieve(clazz, retrieve);
 										}

@@ -25,6 +25,9 @@ public class Configuration
 	// holds the rule mapping for setting custom values on specific fields
 	private RuleMapping ruleMapping;
 	
+	// holds the object that instructions which classes to either cache or omit from cache
+	private CacheOverride cacheOverride;
+	
 	// holds the number of objects to auto populate into a collection whenever
 	// one is created
 	private int collectionAutoFillCount;
@@ -58,8 +61,7 @@ public class Configuration
 	}
 	
 	/**
-	 * Sets the {@link InterfaceMapper} to determine which concrete classes should be instantiated
-	 * in place of
+	 * Sets the {@link InterfaceMapper} to determine which concrete classes should be instantiated in place of
 	 * pre-defined interfaces
 	 * 
 	 * @param interfaceMapper
@@ -100,6 +102,23 @@ public class Configuration
 	}
 	
 	/**
+	 * @return the cacheOverride
+	 */
+	public CacheOverride getCacheOverride()
+	{
+		return cacheOverride;
+	}
+	
+	/**
+	 * @param cacheOverride
+	 *            the cacheOverride to set
+	 */
+	public void setCacheOverride(CacheOverride cacheOverride)
+	{
+		this.cacheOverride = cacheOverride;
+	}
+	
+	/**
 	 * Determines if a cache should be used when creating objects
 	 * 
 	 * @return boolean
@@ -115,8 +134,7 @@ public class Configuration
 	}
 	
 	/**
-	 * Sets the number of objects that should be pre-populated into collections whenever one is
-	 * created
+	 * Sets the number of objects that should be pre-populated into collections whenever one is created
 	 * 
 	 * @param collectionAutoFillCount
 	 */
@@ -149,5 +167,18 @@ public class Configuration
 	public void setProxyUnmappedInterfaces(boolean proxyUnmappedInterfaces)
 	{
 		this.proxyUnmappedInterfaces = proxyUnmappedInterfaces;
+	}
+	
+	public boolean useCache(final Class<?> clazz)
+	{
+		// check to see if the cache override contains this class
+		if (cacheOverride.containsKey(clazz))
+		{
+			return cacheOverride.get(clazz);
+		}
+		else
+		{
+			return isCache();
+		}
 	}
 }

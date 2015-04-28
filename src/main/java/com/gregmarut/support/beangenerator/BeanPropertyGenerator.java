@@ -20,9 +20,10 @@ import org.slf4j.LoggerFactory;
 
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
+import com.gregmarut.support.beangenerator.config.CacheOverride;
+import com.gregmarut.support.beangenerator.config.Configuration;
 import com.gregmarut.support.beangenerator.config.DefaultValues;
 import com.gregmarut.support.beangenerator.config.InterfaceMapper;
-import com.gregmarut.support.beangenerator.config.Configuration;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
 
 /**
@@ -101,6 +102,7 @@ public final class BeanPropertyGenerator
 		configuration.setDefaultValues(new DefaultValues());
 		configuration.setInterfaceMapper(new InterfaceMapper());
 		configuration.setRuleMapping(new RuleMapping());
+		configuration.setCacheOverride(new CacheOverride());
 		configuration.setProxyUnmappedInterfaces(proxyUnmappedInterfaces);
 		configuration.setCollectionAutoFillCount(DEFAULT_COLLECTION_AUTO_FILL_COUNT);
 		configuration.setCache(useCache);
@@ -170,7 +172,7 @@ public final class BeanPropertyGenerator
 		};
 		
 		// check to see if caching is enabled
-		if (configuration.isCache())
+		if (configuration.useCache(clazz))
 		{
 			return (T) cache.getOrRetieve(clazz, retrieve);
 		}
