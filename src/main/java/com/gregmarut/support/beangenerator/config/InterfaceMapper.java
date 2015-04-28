@@ -26,75 +26,22 @@ import java.util.Set;
  * 
  * @author Greg Marut
  */
-public class InterfaceMapper
+public class InterfaceMapper extends ClassMapContainer<Class<?>>
 {
-	@SuppressWarnings("rawtypes")
-	public static final Class<? extends Collection> DEFAULT_COLLECTION = LinkedList.class;
-	@SuppressWarnings("rawtypes")
-	public static final Class<? extends List> DEFAULT_LIST = LinkedList.class;
-	@SuppressWarnings("rawtypes")
-	public static final Class<? extends Map> DEFAULT_MAP = HashMap.class;
-	@SuppressWarnings("rawtypes")
-	public static final Class<? extends Set> DEFAULT_SET = HashSet.class;
-	
-	// holds the map that stores the class to value mapping
-	private final Map<Class<?>, Class<?>> map;
-	
-	/**
-	 * Constructs the InterfaceMapper
-	 */
-	public InterfaceMapper()
-	{
-		map = new HashMap<Class<?>, Class<?>>();
-		
-		// add the default values to the map
-		setupDefaultValues();
-	}
+	public static final Class<?> DEFAULT_COLLECTION = LinkedList.class;
+	public static final Class<?> DEFAULT_LIST = LinkedList.class;
+	public static final Class<?> DEFAULT_MAP = HashMap.class;
+	public static final Class<?> DEFAULT_SET = HashSet.class;
 	
 	/**
 	 * Sets up the map with all of the default values
 	 */
+	@Override
 	protected void setupDefaultValues()
 	{
 		put(Collection.class, DEFAULT_COLLECTION);
 		put(List.class, DEFAULT_LIST);
 		put(Map.class, DEFAULT_MAP);
 		put(Set.class, DEFAULT_SET);
-	}
-	
-	public final <V> void put(final Class<V> key, final Class<? extends V> value)
-	{
-		// make sure the value is not null
-		if (null == value)
-		{
-			throw new IllegalArgumentException("value cannot be null.");
-		}
-		
-		// create a new value object
-		map.put(key, value);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public final <V> Class<V> get(final Class<V> key)
-	{
-		// retrieve the value object from the map
-		return (Class<V>) map.get(key);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public final <V> Class<V> remove(final Class<V> key)
-	{
-		// remove the object from the map if it exists
-		return (Class<V>) map.remove(key);
-	}
-	
-	public final boolean containsKey(final Class<?> key)
-	{
-		return map.containsKey(key);
-	}
-	
-	public final void clear()
-	{
-		map.clear();
 	}
 }
