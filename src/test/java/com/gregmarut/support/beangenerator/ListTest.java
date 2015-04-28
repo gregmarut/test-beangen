@@ -13,14 +13,17 @@
 package com.gregmarut.support.beangenerator;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+
+import junit.framework.Assert;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.gregmarut.support.bean.ChildBean;
+import com.gregmarut.support.bean.TestBean;
 
-public class InheritanceTest
+public class ListTest
 {
 	// holds the BeanPropertyGenerator which is used for creating and populating objects with test
 	// data
@@ -33,24 +36,23 @@ public class InheritanceTest
 		beanPropertyGenerator = new BeanPropertyGenerator();
 	}
 	
-	/**
-	 * A test to ensure that the fields in the parent classes are set properly
-	 */
 	@Test
-	public void simpleInheritanceTest()
+	public void simpleListTest()
 	{
-		// create a new test object and fill every field with test data
-		ChildBean childBean = beanPropertyGenerator.get(ChildBean.class);
+		// generate the list of test beans
+		List<TestBean> testBeans = beanPropertyGenerator.getList(TestBean.class, 5);
 		
-		// make sure the parent strings are not null
-		assertNotNull(childBean.getSomeParentString());
-		assertNotNull(childBean.getAnotherParentString());
-		assertNotNull(childBean.getGrandparentString());
+		// make sure the size of the list is 5
+		Assert.assertEquals(5, testBeans.size());
 		
-		// make sure all of the string fields were set correctly
-		assertEquals("someParentString", childBean.getSomeParentString());
-		assertEquals("anotherParentString", childBean.getAnotherParentString());
-		assertEquals("grandparentString", childBean.getGrandparentString());
-		assertEquals(1, childBean.getChildValue());
+		// for each of the test beans
+		for (TestBean testBean : testBeans)
+		{
+			// make sure all of the string fields were set correctly
+			assertEquals("accountID", testBean.getAccountID());
+			assertEquals("firstName", testBean.getFirstName());
+			assertEquals("lastName", testBean.getLastName());
+			assertEquals("dateOfBirth", testBean.getDateOfBirth());
+		}
 	}
 }

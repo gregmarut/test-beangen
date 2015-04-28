@@ -10,26 +10,42 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.beangenerator.rule;
+package com.gregmarut.support.beangenerator.value;
 
-import com.gregmarut.support.beangenerator.value.Value;
+import java.lang.reflect.Field;
 
-public class FieldNameMatchesRule<V> extends FieldNameRule<V>
+/**
+ * Represents a value that never changes
+ * 
+ * @author Greg Marut
+ * @param <V>
+ */
+public class StaticValue<V> implements Value<V>
 {
-	public FieldNameMatchesRule(String pattern, V value)
-	{
-		super(pattern, value);
-	}
+	private final Class<V> type;
+	private final V value;
 	
-	public FieldNameMatchesRule(final String pattern, final Value<V> value)
+	public StaticValue(final V value, final Class<V> type)
 	{
-		super(pattern, value);
+		this.value = value;
+		this.type = type;
 	}
 	
 	@Override
-	public boolean isMatch(final Class<?> clazz, final String name)
+	public Class<V> getType()
 	{
-		// check to see if the field names match
-		return pattern.equals(name);
+		return type;
+	}
+	
+	@Override
+	public V getValue()
+	{
+		return value;
+	}
+	
+	@Override
+	public V getValue(final Field field)
+	{
+		return value;
 	}
 }

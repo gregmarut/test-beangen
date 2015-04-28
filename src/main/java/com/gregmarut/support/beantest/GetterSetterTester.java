@@ -1,13 +1,13 @@
 /*******************************************************************************
  * <pre>
- * Copyright (c) 2015 Greg.
+ * Copyright (c) 2015 Greg Marut.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  * 
  * Contributors:
- *     Greg - initial API and implementation
+ *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
 package com.gregmarut.support.beantest;
@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
+import com.gregmarut.support.util.ReflectionUtil;
 
 /**
  * Automates the testing of getter and setter methods using reflection
@@ -81,7 +82,7 @@ public class GetterSetterTester
 		if (null != target)
 		{
 			// get the list of declared fields from the target object
-			Field[] fields = target.getClass().getDeclaredFields();
+			Field[] fields = ReflectionUtil.getAllFields(target);
 			
 			// for each of the fields
 			for (Field field : fields)
@@ -91,6 +92,8 @@ public class GetterSetterTester
 					// make sure this field is accessible
 					field.setAccessible(true);
 					
+					logger.debug("Looking for Getter/Setter Methods for {}", field.toString());
+					
 					// retrieve the getter and setter methods for this field
 					Method getterMethod = findGetterMethod(target, field);
 					Method setterMethod = findSetterMethod(target, field);
@@ -98,6 +101,10 @@ public class GetterSetterTester
 					// make sure the getter and setter methods are not null
 					if (null != getterMethod && null != setterMethod)
 					{
+						
+						logger.debug("Found Getter Method: {}", getterMethod.toString());
+						logger.debug("Found Setter Method: {}", setterMethod.toString());
+						
 						// instantiate a new value for this field
 						Object expectedValue = beanPropertyGenerator.get(field.getType(), false);
 						
@@ -178,7 +185,7 @@ public class GetterSetterTester
 		}
 		
 		// find this method
-		return target.getClass().getDeclaredMethod(getterFieldName);
+		return ReflectionUtil.getDeclaredMethod(target, getterFieldName);
 	}
 	
 	/**
@@ -197,7 +204,7 @@ public class GetterSetterTester
 		String setterFieldName = convertFieldToMethod(SETTER_PREFIX, field.getName());
 		
 		// find this method
-		return target.getClass().getDeclaredMethod(setterFieldName, field.getType());
+		return ReflectionUtil.getDeclaredMethod(target, setterFieldName, field.getType());
 	}
 	
 	/**

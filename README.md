@@ -12,7 +12,7 @@ BeanPropertyGenerator beanPropertyGenerator = new BeanPropertyGenerator();
 SomeObject someObject = beanPropertyGenerator.get(SomeObject.class);
 
 ##Default Values
-By default, com.gregmarut.support.beangenerator.DefaultValues is simply a Map of Class and Object which allows the framework to know what the default values should be considering the object type. If the map contains an object for a class, whenever that class is found, it used instead of attempting to recursively initialize the object.  
+By default, com.gregmarut.support.beangenerator.DefaultValues simply contains a Map of Class and Object which allows the framework to know what the default values should be considering the object type. If the map contains an object for a class, whenever that class is found, it is used instead of attempting to recursively initialize the object.  
 
 ##Configuration
 BeanPropertyGenerator has a Properties object which stores the instructions for how fields are populated. These can be completely customized by either changing or setting new default values for a class, map concrete classes to interfaces, or set Rule objects that allow for unique values to be set based on attributes of the field name and type.

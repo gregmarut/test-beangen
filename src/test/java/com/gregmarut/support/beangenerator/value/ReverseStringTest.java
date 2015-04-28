@@ -10,12 +10,11 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.beangenerator;
+package com.gregmarut.support.beangenerator.value;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Proxy;
+import java.lang.reflect.Field;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,7 +22,7 @@ import org.junit.Test;
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
 
-public class InterfaceProxyTest
+public class ReverseStringTest
 {
 	// holds the BeanPropertyGenerator which is used for creating and populating objects with test
 	// data
@@ -33,32 +32,29 @@ public class InterfaceProxyTest
 	public static void setup()
 	{
 		// create a new BeanPropertyGenerator
-		beanPropertyGenerator = new BeanPropertyGenerator(false, true);
+		beanPropertyGenerator = new BeanPropertyGenerator();
 		
-		// clear the interface mappings
-		beanPropertyGenerator.getProperties().getInterfaceMapper().clear();
+		// override the string functionality to use reversed strings
+		beanPropertyGenerator.getProperties().getDefaultValues().put(String.class, new StringValue()
+		{
+			@Override
+			public String getValue(Field field)
+			{
+				return new StringBuilder(super.getValue(field)).reverse().toString();
+			}
+		});
 	}
 	
 	@Test
-	public void testBean()
+	public void simpleStringTest()
 	{
 		// create a new test object and fill every field with test data
 		TestBean testBean = beanPropertyGenerator.get(TestBean.class);
 		
-		boolean isEmpty = testBean.getMap().isEmpty();
-		int size = testBean.getMap().size();
-		
-		// make sure the map is actually a proxy class
-		assertTrue(Proxy.isProxyClass(testBean.getMap().getClass()));
-		
-		// make sure that the Map.isEmpty returns whatever the default value was set to for
-		// "boolean"s in the BeanPropertyGenerator
-		// default is set to true
-		assertTrue(isEmpty);
-		
-		// make sure that the Map.size returns whatever the default value was set to for "int"s in
-		// the BeanPropertyGenerator
-		// default is set to 1
-		assertEquals(1, size);
+		// make sure all of the string fields were set correctly
+		assertEquals("DItnuocca", testBean.getAccountID());
+		assertEquals("emaNtsrif", testBean.getFirstName());
+		assertEquals("emaNtsal", testBean.getLastName());
+		assertEquals("htriBfOetad", testBean.getDateOfBirth());
 	}
 }

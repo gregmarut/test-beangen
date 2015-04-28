@@ -1,18 +1,20 @@
 /*******************************************************************************
  * <pre>
- * Copyright (c) 2015 Greg.
+ * Copyright (c) 2015 Greg Marut.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  * 
  * Contributors:
- *     Greg - initial API and implementation
+ *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.rule;
 
 import com.gregmarut.support.beangenerator.ClassConversionUtil;
+import com.gregmarut.support.beangenerator.value.StaticValue;
+import com.gregmarut.support.beangenerator.value.Value;
 
 /**
  * Contains the base class for determining a Rule
@@ -22,10 +24,28 @@ import com.gregmarut.support.beangenerator.ClassConversionUtil;
 public abstract class Rule<V>
 {
 	// holds the value for this rule
-	private final V value;
+	private final Value<V> value;
 	
+	@SuppressWarnings("unchecked")
 	public Rule(final V value)
 	{
+		// make sure the value is not null
+		if (null == value)
+		{
+			throw new IllegalArgumentException("value cannot be null");
+		}
+		
+		this.value = new StaticValue<V>(value, (Class<V>) value.getClass());
+	}
+	
+	public Rule(final Value<V> value)
+	{
+		// make sure the value is not null
+		if (null == value)
+		{
+			throw new IllegalArgumentException("value cannot be null");
+		}
+		
 		this.value = value;
 	}
 	
@@ -37,7 +57,7 @@ public abstract class Rule<V>
 	@SuppressWarnings("unchecked")
 	public Class<V> getReturnType()
 	{
-		return (Class<V>) ClassConversionUtil.convertToNonPrimitive(value.getClass());
+		return (Class<V>) ClassConversionUtil.convertToNonPrimitive(value.getType());
 	}
 	
 	/**
@@ -45,7 +65,7 @@ public abstract class Rule<V>
 	 * 
 	 * @return
 	 */
-	public V getValue()
+	public Value<V> getValue()
 	{
 		return value;
 	}
@@ -54,9 +74,9 @@ public abstract class Rule<V>
 	 * Determines if this rule matches the given class type and name
 	 * 
 	 * @param clazz
-	 *        The type of value that is being checked
+	 * The type of value that is being checked
 	 * @param name
-	 *        The name of the attribute
+	 * The name of the attribute
 	 * @return
 	 */
 	public abstract boolean isMatch(final Class<?> clazz, final String name);

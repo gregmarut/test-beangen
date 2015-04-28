@@ -1,13 +1,13 @@
 /*******************************************************************************
  * <pre>
- * Copyright (c) 2015 Greg.
+ * Copyright (c) 2015 Greg Marut.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  * 
  * Contributors:
- *     Greg - initial API and implementation
+ *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.rules;
@@ -38,10 +38,6 @@ public class NoGenericTest
 	private static BeanPropertyGenerator beanPropertyGenerator;
 	
 	@BeforeClass
-	@SuppressWarnings(
-	{
-		"rawtypes", "unchecked"
-	})
 	public static void setup()
 	{
 		// create a new BeanPropertyGenerator
@@ -51,10 +47,10 @@ public class NoGenericTest
 		RuleMapping ruleMapping = new RuleMapping();
 		
 		// create a new rule to replace all primitive fields that start with "some"
-		Rule ruleWithNoGeneric = new FieldNameStartsWithRule("some", 5);
-		Rule ruleWithNoGeneric2 = new FieldNameStartsWithRule("some", 3.14f);
-		Rule ruleWithNoGeneric3 = new FieldNameMatchesRule("integer", 7);
-		Rule ruleWithNoGeneric4 = new FieldNameMatchesRule("firstName", "John");
+		Rule<Integer> ruleWithNoGeneric = new FieldNameStartsWithRule<Integer>("some", 5);
+		Rule<Float> ruleWithNoGeneric2 = new FieldNameStartsWithRule<Float>("some", 3.14f);
+		Rule<Integer> ruleWithNoGeneric3 = new FieldNameMatchesRule<Integer>("integer", 7);
+		Rule<String> ruleWithNoGeneric4 = new FieldNameMatchesRule<String>("firstName", "John");
 		
 		// add this rule to the mapping object
 		ruleMapping.add(ruleWithNoGeneric);
@@ -83,10 +79,10 @@ public class NoGenericTest
 		// verify the integer
 		assertEquals(new Integer(7), testBean.getInteger());
 		
-		//verify the strings
+		// verify the strings
 		assertEquals("John", testBean.getFirstName());
 		
-		//verify that these fields are not affected
+		// verify that these fields are not affected
 		assertEquals("lastName", testBean.getLastName());
 	}
 }

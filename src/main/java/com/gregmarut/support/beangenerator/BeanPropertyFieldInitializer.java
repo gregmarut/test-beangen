@@ -1,13 +1,13 @@
 /*******************************************************************************
  * <pre>
- * Copyright (c) 2015 Greg.
+ * Copyright (c) 2015 Greg Marut.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
  * 
  * Contributors:
- *     Greg - initial API and implementation
+ *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
@@ -17,14 +17,12 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.rule.Rule;
+import com.gregmarut.support.util.ReflectionUtil;
 
 /**
  * This class is responsible for the actual initialization of a bean object. It uses reflection to cascade an object
@@ -47,41 +45,13 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	protected void populate(final Object object)
 	{
 		// retrieve a list of all of the methods defined in this class
-		Field[] fields = getAllFields(object);
+		Field[] fields = ReflectionUtil.getAllFields(object);
 		
 		// set the data on the object
 		setData(object, fields);
 		
 		// populate the collections in this object with test data
 		populateCollections(object, fields);
-	}
-	
-	/**
-	 * Retrieve all of the fields for a given object including any parent classes
-	 * 
-	 * @param object
-	 * @return
-	 */
-	private Field[] getAllFields(final Object object)
-	{
-		// holds the list of fields
-		List<Field> allFields = new ArrayList<Field>();
-		
-		// holds the class to inspect
-		Class<?> clazz = object.getClass();
-		
-		// while the class is not null
-		while (null != clazz)
-		{
-			// retrieve all of the declared field for this class and add them to the list
-			Field[] fields = clazz.getDeclaredFields();
-			allFields.addAll(Arrays.asList(fields));
-			
-			// read this class' superclass next if one exists
-			clazz = clazz.getSuperclass();
-		}
-		
-		return allFields.toArray(new Field[allFields.size()]);
 	}
 	
 	/**
@@ -121,7 +91,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 						logger.debug("Rule found for \"{}\":{}", field.getName(), clazz.getName());
 						
 						// set the value to the value defined in the rule
-						value = rule.getValue();
+						value = rule.getValue().getValue(field);
 					}
 					
 					// set the value on the object
@@ -166,40 +136,19 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 			IllegalAccessException
 	{
 		// holds the value of the object to return
-		final Object value;
+		final Object obj;
 		
 		// make sure the parameter is not null
 		if (null != clazz)
 		{
-			// check to see if this parameter is a string
-			if (clazz.equals(String.class))
-			{
-				// create the value to assign to this string field
-				String stringValue;
-				
-				// check to see if the default string should be used
-				if (null == properties.getDefaultValues().get(String.class))
-				{
-					// assign the value to the field name
-					stringValue = field.getName();
-				}
-				else
-				{
-					// assign the value to the user specified default string
-					stringValue = (String) properties.getDefaultValues().get(String.class);
-				}
-				
-				// set the value to this string
-				value = stringValue;
-			}
 			// check to see if this parameter is a type of collection
-			else if (Collection.class.isAssignableFrom(clazz))
+			if (Collection.class.isAssignableFrom(clazz))
 			{
 				// instantiate a new collection object
 				Collection<?> collection = (Collection<?>) instantiate(clazz);
 				
 				// assign the collection as the object to set into the method
-				value = collection;
+				obj = collection;
 			}
 			else
 			{
@@ -208,7 +157,8 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 				{
 					logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
 					
-					value = properties.getDefaultValues().get(clazz);
+					// retrieve the default value
+					obj = properties.getDefaultValues().get(clazz).getValue(field);
 				}
 				else
 				{
@@ -218,21 +168,21 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					// check to see if caching is enabled
 					if (properties.isCache())
 					{
-						value = cache.getOrRetieve(clazz, retrieve);
+						obj = cache.getOrRetieve(clazz, retrieve);
 					}
 					else
 					{
-						value = retrieve.retrieve();
+						obj = retrieve.retrieve();
 					}
 				}
 			}
 		}
 		else
 		{
-			value = null;
+			obj = null;
 		}
 		
-		return value;
+		return obj;
 	}
 	
 	/**

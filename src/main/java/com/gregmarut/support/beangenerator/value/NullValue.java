@@ -10,9 +10,40 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.beangenerator.cache;
+package com.gregmarut.support.beangenerator.value;
 
-public interface Retrieve<T>
+import java.lang.reflect.Field;
+
+/**
+ * Represents a null value
+ * 
+ * @author Greg Marut
+ * @param <V>
+ */
+public class NullValue<V> implements Value<V>
 {
-	public T retrieve();
+	private final Class<V> type;
+	
+	public NullValue(final Class<V> type)
+	{
+		this.type = type;
+	}
+	
+	@Override
+	public Class<V> getType()
+	{
+		return type;
+	}
+	
+	@Override
+	public V getValue()
+	{
+		return null;
+	}
+	
+	@Override
+	public V getValue(final Field field)
+	{
+		return null;
+	}
 }

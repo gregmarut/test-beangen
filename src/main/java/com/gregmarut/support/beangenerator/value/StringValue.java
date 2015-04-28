@@ -10,9 +10,32 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.beangenerator.cache;
+package com.gregmarut.support.beangenerator.value;
 
-public interface Retrieve<T>
+import java.lang.reflect.Field;
+
+/**
+ * The default implementation for how strings are generated
+ * 
+ * @author Greg Marut
+ */
+public class StringValue implements Value<String>
 {
-	public T retrieve();
+	@Override
+	public Class<String> getType()
+	{
+		return String.class;
+	}
+	
+	@Override
+	public String getValue()
+	{
+		return new String();
+	}
+	
+	@Override
+	public String getValue(final Field field)
+	{
+		return field.getName();
+	}
 }
