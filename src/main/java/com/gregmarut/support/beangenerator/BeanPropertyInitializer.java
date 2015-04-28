@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.config.InterfaceMapper;
-import com.gregmarut.support.beangenerator.config.Properties;
+import com.gregmarut.support.beangenerator.config.Configuration;
 import com.gregmarut.support.beangenerator.proxy.GeneratorInterfaceProxy;
 import com.gregmarut.support.beangenerator.rule.Rule;
 import com.gregmarut.support.util.ClassConversionUtil;
@@ -41,7 +41,7 @@ public abstract class BeanPropertyInitializer
 	// instantiate the logger
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected Properties properties;
+	protected Configuration configuration;
 	
 	// holds the cache for this BeanPropertyGenerator
 	protected final Cache cache;
@@ -53,17 +53,17 @@ public abstract class BeanPropertyInitializer
 	/**
 	 * Constructs a new BeanPropertyInitializer
 	 * 
-	 * @param properties
+	 * @param configuration
 	 */
-	BeanPropertyInitializer(final Properties properties, final Cache cache)
+	BeanPropertyInitializer(final Configuration configuration, final Cache cache)
 	{
-		// make sure the properties are not null
-		if (null == properties)
+		// make sure the configuration are not null
+		if (null == configuration)
 		{
-			throw new IllegalArgumentException("properties cannot be null");
+			throw new IllegalArgumentException("configuration cannot be null");
 		}
 		
-		setProperties(properties);
+		setConfiguration(configuration);
 		
 		this.instantiationStack = new ArrayDeque<Class<?>>();
 		this.cache = cache;
@@ -110,7 +110,7 @@ public abstract class BeanPropertyInitializer
 			object = instantiate(clazz);
 			
 			// check to see if caching is enabled
-			if (properties.isCache())
+			if (configuration.isCache())
 			{
 				logger.debug("Adding " + clazz.getName() + " to the cache");
 				
@@ -121,7 +121,7 @@ public abstract class BeanPropertyInitializer
 			// make sure the new object is not null
 			// a new object can only be null if it was specifically defined as
 			// null in the
-			// properties.getDefaultValues()
+			// configuration.getDefaultValues()
 			if (null != object && !Proxy.isProxyClass(object.getClass()))
 			{
 				// push this class onto the stack
@@ -160,7 +160,7 @@ public abstract class BeanPropertyInitializer
 		// make sure the new object is not null
 		// a new object can only be null if it was specifically defined as null
 		// in the
-		// properties.getDefaultValues()
+		// configuration.getDefaultValues()
 		if (null != object)
 		{
 			logger.debug("Initializing " + object.getClass().getName());
@@ -202,7 +202,7 @@ public abstract class BeanPropertyInitializer
 		{
 			// attempt to map the interface to a concrete class to instantiate
 			// instead
-			Class<T> concreteClass = (Class<T>) properties.getInterfaceMapper().get(clazz);
+			Class<T> concreteClass = (Class<T>) configuration.getInterfaceMapper().get(clazz);
 			
 			if (null != concreteClass)
 			{
@@ -215,10 +215,10 @@ public abstract class BeanPropertyInitializer
 			{
 				// check to see if proxies should be generator for unmapped
 				// interfaces
-				if (properties.getProxyUnmappedInterfaces())
+				if (configuration.getProxyUnmappedInterfaces())
 				{
 					// create a new proxy for this interface
-					newObject = GeneratorInterfaceProxy.createProxy(properties, clazz);
+					newObject = GeneratorInterfaceProxy.createProxy(configuration, clazz);
 				}
 				else
 				{
@@ -247,12 +247,12 @@ public abstract class BeanPropertyInitializer
 		else
 		{
 			// check to see if this value exists in the default values map
-			if (properties.getDefaultValues().containsKey(clazz))
+			if (configuration.getDefaultValues().containsKey(clazz))
 			{
 				logger.debug("Found default value for " + clazz.getName());
 				
 				// retrieve the default value
-				newObject = properties.getDefaultValues().get(clazz).getValue();
+				newObject = configuration.getDefaultValues().get(clazz).getValue();
 			}
 			else
 			{
@@ -274,7 +274,7 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule}
+	 * Checks the {@link configuration.getRuleMapping()} to determine if there are any {@link Rule}
 	 * that match this
 	 * specific setter method. If a match is found, the {@link Rule} is returned.
 	 * 
@@ -288,7 +288,7 @@ public abstract class BeanPropertyInitializer
 		Rule<?> rule = null;
 		
 		// make sure the rule mapping object is not null
-		if (null != properties.getRuleMapping())
+		if (null != configuration.getRuleMapping())
 		{
 			// convert the class from its primitive value if applicable,
 			// otherwise use the original
@@ -300,11 +300,11 @@ public abstract class BeanPropertyInitializer
 			
 			// check to see if the rule mapping contains rules for this
 			// parameter type
-			if (properties.getRuleMapping().contains(nonPrimitiveClass))
+			if (configuration.getRuleMapping().contains(nonPrimitiveClass))
 			{
 				// get the list of rules from the rule mapping based on this
 				// parameter type
-				List<Rule<?>> rules = properties.getRuleMapping().get(nonPrimitiveClass);
+				List<Rule<?>> rules = configuration.getRuleMapping().get(nonPrimitiveClass);
 				
 				// for every rule in the list or until a rule is found
 				for (int i = 0; i < rules.size() && null == rule; i++)
@@ -324,19 +324,19 @@ public abstract class BeanPropertyInitializer
 		return rule;
 	}
 	
-	public final void setProperties(final Properties properties)
+	public final void setConfiguration(final Configuration configuration)
 	{
-		if (null == properties)
+		if (null == configuration)
 		{
-			throw new IllegalArgumentException("properties cannot be null.");
+			throw new IllegalArgumentException("configuration cannot be null.");
 		}
 		
-		this.properties = properties;
+		this.configuration = configuration;
 	}
 	
-	public final Properties getProperties()
+	public final Configuration getConfiguration()
 	{
-		return properties;
+		return configuration;
 	}
 	
 	/**

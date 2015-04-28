@@ -22,7 +22,7 @@ import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.config.DefaultValues;
 import com.gregmarut.support.beangenerator.config.InterfaceMapper;
-import com.gregmarut.support.beangenerator.config.Properties;
+import com.gregmarut.support.beangenerator.config.Configuration;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
 
 /**
@@ -35,7 +35,7 @@ import com.gregmarut.support.beangenerator.rule.RuleMapping;
  * to the name of the field. 
  * 
  * Collections are automatically populated with X number of objects of the specified generic type where X is 
- * <i>collectionAutoFillCount</i> in the properties. If no generic is specified for the collection, it is not 
+ * <i>collectionAutoFillCount</i> in the configuration. If no generic is specified for the collection, it is not 
  * automatically populated with objects.
  * </pre>
  * 
@@ -55,8 +55,8 @@ public final class BeanPropertyGenerator
 	// holds the cache for this BeanPropertyGenerator
 	private final Cache cache;
 	
-	// holds the properties for this generator
-	private final Properties properties;
+	// holds the configuration for this generator
+	private final Configuration configuration;
 	
 	/**
 	 * Constructs a new BeanPropertyGenerator object Bean caching is enabled by default
@@ -94,16 +94,16 @@ public final class BeanPropertyGenerator
 	 */
 	public BeanPropertyGenerator(final boolean useCache, final boolean proxyUnmappedInterfaces)
 	{
-		// assign the properties
-		this.properties = new Properties();
+		// assign the configuration
+		this.configuration = new Configuration();
 		
-		// assign the default values in the properties
-		properties.setDefaultValues(new DefaultValues());
-		properties.setInterfaceMapper(new InterfaceMapper());
-		properties.setRuleMapping(new RuleMapping());
-		properties.setProxyUnmappedInterfaces(proxyUnmappedInterfaces);
-		properties.setCollectionAutoFillCount(DEFAULT_COLLECTION_AUTO_FILL_COUNT);
-		properties.setCache(useCache);
+		// assign the default values in the configuration
+		configuration.setDefaultValues(new DefaultValues());
+		configuration.setInterfaceMapper(new InterfaceMapper());
+		configuration.setRuleMapping(new RuleMapping());
+		configuration.setProxyUnmappedInterfaces(proxyUnmappedInterfaces);
+		configuration.setCollectionAutoFillCount(DEFAULT_COLLECTION_AUTO_FILL_COUNT);
+		configuration.setCache(useCache);
 		
 		// instantiate the new cache for this instance
 		this.cache = new Cache();
@@ -112,13 +112,13 @@ public final class BeanPropertyGenerator
 	/**
 	 * Constructs a new BeanPropertyGenerator object
 	 * 
-	 * @param properties
-	 *            Holds the properties that will determine how this generator will function
+	 * @param configuration
+	 *            Holds the configuration that will determine how this generator will function
 	 */
-	public BeanPropertyGenerator(final Properties properties)
+	public BeanPropertyGenerator(final Configuration configuration)
 	{
-		// assign the properties
-		this.properties = properties;
+		// assign the configuration
+		this.configuration = configuration;
 		
 		// instantiate the new cache for this instance
 		this.cache = new Cache();
@@ -170,7 +170,7 @@ public final class BeanPropertyGenerator
 		};
 		
 		// check to see if caching is enabled
-		if (properties.isCache())
+		if (configuration.isCache())
 		{
 			return (T) cache.getOrRetieve(clazz, retrieve);
 		}
@@ -189,7 +189,7 @@ public final class BeanPropertyGenerator
 	 */
 	public <T> List<T> getList(final Class<T> clazz)
 	{
-		return getList(clazz, properties.getCollectionAutoFillCount());
+		return getList(clazz, configuration.getCollectionAutoFillCount());
 	}
 	
 	/**
@@ -231,13 +231,13 @@ public final class BeanPropertyGenerator
 	}
 	
 	/**
-	 * Returns the properties that are associated with this bean property generator
+	 * Returns the configuration that are associated with this bean property generator
 	 * 
 	 * @return
 	 */
-	public Properties getProperties()
+	public Configuration getConfiguration()
 	{
-		return properties;
+		return configuration;
 	}
 	
 	/**
@@ -258,6 +258,6 @@ public final class BeanPropertyGenerator
 	protected final BeanPropertyInitializer getBeanPropertyInitializer()
 	{
 		// create a new instance of the initializer so that it is thread safe.
-		return new BeanPropertyFieldInitializer(properties, cache);
+		return new BeanPropertyFieldInitializer(configuration, cache);
 	}
 }

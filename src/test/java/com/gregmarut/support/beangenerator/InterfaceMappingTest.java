@@ -56,7 +56,7 @@ public class InterfaceMappingTest
 		interfaceMapper.put(List.class, ArrayList.class);
 		
 		// set the interface mapper in the BeanPropertyGenerator
-		beanPropertyGenerator.getProperties().setInterfaceMapper(interfaceMapper);
+		beanPropertyGenerator.getConfiguration().setInterfaceMapper(interfaceMapper);
 	}
 	
 	/**

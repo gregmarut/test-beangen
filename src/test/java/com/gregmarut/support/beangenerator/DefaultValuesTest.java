@@ -52,7 +52,7 @@ public class DefaultValuesTest
 		defaultValues.put(AnotherTestBean.class, new StaticValue<AnotherTestBean>(null, AnotherTestBean.class));
 		
 		// set the default values object into the bean property generator
-		beanPropertyGenerator.getProperties().setDefaultValues(defaultValues);
+		beanPropertyGenerator.getConfiguration().setDefaultValues(defaultValues);
 	}
 	
 	/**

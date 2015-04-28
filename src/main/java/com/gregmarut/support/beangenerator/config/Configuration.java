@@ -14,7 +14,7 @@ package com.gregmarut.support.beangenerator.config;
 
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
 
-public class Properties
+public class Configuration
 {
 	// holds the default values to use for initializing model objects
 	private DefaultValues defaultValues;

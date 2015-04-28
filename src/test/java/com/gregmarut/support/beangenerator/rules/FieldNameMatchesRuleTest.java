@@ -66,7 +66,7 @@ public class FieldNameMatchesRuleTest
 		ruleMapping.add(substituteStringDateOfBirthField);
 		
 		// set this mapping object in the BeanPropertyGenerator
-		beanPropertyGenerator.getProperties().setRuleMapping(ruleMapping);
+		beanPropertyGenerator.getConfiguration().setRuleMapping(ruleMapping);
 	}
 	
 	/**
