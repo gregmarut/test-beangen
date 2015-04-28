@@ -22,8 +22,11 @@ import org.slf4j.LoggerFactory;
 
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
+import com.gregmarut.support.beangenerator.config.InterfaceMapper;
+import com.gregmarut.support.beangenerator.config.Properties;
 import com.gregmarut.support.beangenerator.proxy.GeneratorInterfaceProxy;
 import com.gregmarut.support.beangenerator.rule.Rule;
+import com.gregmarut.support.util.ClassConversionUtil;
 
 /**
  * This class is responsible for the actual initialization of a bean object. It uses reflection to

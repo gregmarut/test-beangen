@@ -12,9 +12,9 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.rule;
 
-import com.gregmarut.support.beangenerator.ClassConversionUtil;
 import com.gregmarut.support.beangenerator.value.StaticValue;
 import com.gregmarut.support.beangenerator.value.Value;
+import com.gregmarut.support.util.ClassConversionUtil;
 
 /**
  * Contains the base class for determining a Rule

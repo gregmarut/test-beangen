@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
+import com.gregmarut.support.beangenerator.config.DefaultValues;
 import com.gregmarut.support.beangenerator.value.StaticValue;
 
 /**

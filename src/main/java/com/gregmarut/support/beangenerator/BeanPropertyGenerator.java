@@ -20,6 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
+import com.gregmarut.support.beangenerator.config.DefaultValues;
+import com.gregmarut.support.beangenerator.config.InterfaceMapper;
+import com.gregmarut.support.beangenerator.config.Properties;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
 
 /**

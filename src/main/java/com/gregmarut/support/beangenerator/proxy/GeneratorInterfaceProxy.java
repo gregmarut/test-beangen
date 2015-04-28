@@ -17,8 +17,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.Properties;
-import com.gregmarut.support.proxy.GetSetInterfaceProxy;
+import com.gregmarut.support.beangenerator.config.Properties;
+import com.gregmarut.support.beantest.proxy.GetSetInterfaceProxy;
 
 public class GeneratorInterfaceProxy implements InvocationHandler
 {

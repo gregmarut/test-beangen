@@ -21,6 +21,7 @@ import java.util.Collection;
 
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
+import com.gregmarut.support.beangenerator.config.Properties;
 import com.gregmarut.support.beangenerator.rule.Rule;
 import com.gregmarut.support.util.ReflectionUtil;
 
