@@ -28,6 +28,8 @@ import java.util.Set;
  */
 public class InterfaceMapper extends ClassMapContainer<Class<?>>
 {
+	private static final long serialVersionUID = 7363468821684530005L;
+	
 	public static final Class<?> DEFAULT_COLLECTION = LinkedList.class;
 	public static final Class<?> DEFAULT_LIST = LinkedList.class;
 	public static final Class<?> DEFAULT_MAP = HashMap.class;

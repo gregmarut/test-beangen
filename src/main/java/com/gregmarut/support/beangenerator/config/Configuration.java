@@ -12,10 +12,14 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.config;
 
+import java.io.Serializable;
+
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
 
-public class Configuration
+public class Configuration implements Serializable
 {
+	private static final long serialVersionUID = 370522421960645850L;
+	
 	// holds the default values to use for initializing model objects
 	private DefaultValues defaultValues;
 	

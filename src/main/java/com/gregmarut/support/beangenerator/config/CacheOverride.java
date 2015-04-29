@@ -14,6 +14,8 @@ package com.gregmarut.support.beangenerator.config;
 
 public class CacheOverride extends ClassMapContainer<Boolean>
 {
+	private static final long serialVersionUID = 1812947733708585550L;
+	
 	@Override
 	protected void setupDefaultValues()
 	{

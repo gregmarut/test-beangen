@@ -12,11 +12,14 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.config;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ClassMapContainer<E>
+public abstract class ClassMapContainer<E> implements Serializable
 {
+	private static final long serialVersionUID = -5674202025647585631L;
+	
 	// holds the map
 	private final Map<Class<?>, E> map;
 	

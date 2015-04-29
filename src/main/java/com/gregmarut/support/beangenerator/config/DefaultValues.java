@@ -33,6 +33,8 @@ import com.gregmarut.support.beangenerator.value.Value;
  */
 public class DefaultValues extends ClassMapContainer<Value<?>>
 {
+	private static final long serialVersionUID = -5754802711063668704L;
+	
 	// holds the initial default values
 	public static final Integer DEFAULT_INTEGER = 1;
 	public static final Short DEFAULT_SHORT = 1;
