@@ -33,7 +33,7 @@ public class NullValueTest
 		beanPropertyGenerator = new BeanPropertyGenerator();
 		
 		// override the string functionality to use reversed strings
-		beanPropertyGenerator.getProperties().getDefaultValues().put(String.class, new NullValue<String>(String.class));
+		beanPropertyGenerator.getConfiguration().getDefaultValues().put(String.class, new NullValue<String>(String.class));
 	}
 	
 	@Test

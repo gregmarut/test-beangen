@@ -21,6 +21,7 @@ import java.util.Collection;
 
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
+import com.gregmarut.support.beangenerator.config.Configuration;
 import com.gregmarut.support.beangenerator.rule.Rule;
 import com.gregmarut.support.util.ReflectionUtil;
 
@@ -35,11 +36,11 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	/**
 	 * Constructs a new BeanPropertyInitializer
 	 * 
-	 * @param properties
+	 * @param configuration
 	 */
-	BeanPropertyFieldInitializer(final Properties properties, final Cache cache)
+	BeanPropertyFieldInitializer(final Configuration configuration, final Cache cache)
 	{
-		super(properties, cache);
+		super(configuration, cache);
 	}
 	
 	protected void populate(final Object object)
@@ -153,12 +154,12 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 			else
 			{
 				// check to see if this value exists in the default values map
-				if (properties.getDefaultValues().containsKey(clazz))
+				if (configuration.getDefaultValues().containsKey(clazz))
 				{
 					logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
 					
 					// retrieve the default value
-					obj = properties.getDefaultValues().get(clazz).getValue(field);
+					obj = configuration.getDefaultValues().get(clazz).getValue(field);
 				}
 				else
 				{
@@ -166,7 +167,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
 					
 					// check to see if caching is enabled
-					if (properties.isCache())
+					if (configuration.useCache(clazz))
 					{
 						obj = cache.getOrRetieve(clazz, retrieve);
 					}
@@ -237,7 +238,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 											+ " with objects of type " + clazz.getName());
 									
 									// for the specific number of times to auto fill lists
-									for (int i = 0; i < properties.getCollectionAutoFillCount(); i++)
+									for (int i = 0; i < configuration.getCollectionAutoFillCount(); i++)
 									{
 										// initialize the new object
 										Object object = null;
@@ -247,7 +248,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 										Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
 										
 										// check to see if caching is enabled
-										if (properties.isCache())
+										if (configuration.useCache(clazz))
 										{
 											object = cache.getOrRetieve(clazz, retrieve);
 										}
@@ -287,7 +288,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule} that match this
+	 * Checks the {@link configuration.getRuleMapping()} to determine if there are any {@link Rule} that match this
 	 * specific field name. If a match is found, the {@link Rule} is returned.
 	 * 
 	 * @param field

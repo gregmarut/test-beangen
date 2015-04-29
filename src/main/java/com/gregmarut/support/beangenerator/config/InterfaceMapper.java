@@ -10,7 +10,7 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.beangenerator;
+package com.gregmarut.support.beangenerator.config;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,16 +21,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Holds a map of interface objects as well as their corresponding concrete object to
- * instantiate. Since interfaces cannot be directly instantiated, this class will substitute
- * a concrete object whenever an interface is found.
+ * Holds a map of interface objects as well as their corresponding concrete object to instantiate. Since interfaces
+ * cannot be directly instantiated, this class will substitute a concrete object whenever an interface is found.
  * 
  * @author Greg Marut
  */
-public class InterfaceMapper extends HashMap<Class<?>, Class<?>>
+public class InterfaceMapper extends ClassMapContainer<Class<?>>
 {
-	// ** Finals **//
-	private static final long serialVersionUID = -7430365572672661258L;
+	private static final long serialVersionUID = 7363468821684530005L;
 	
 	public static final Class<?> DEFAULT_COLLECTION = LinkedList.class;
 	public static final Class<?> DEFAULT_LIST = LinkedList.class;
@@ -38,13 +36,14 @@ public class InterfaceMapper extends HashMap<Class<?>, Class<?>>
 	public static final Class<?> DEFAULT_SET = HashSet.class;
 	
 	/**
-	 * Constructs the InterfaceMapper
+	 * Sets up the map with all of the default values
 	 */
-	public InterfaceMapper()
+	@Override
+	protected void setupDefaultValues()
 	{
-		super.put(Collection.class, DEFAULT_COLLECTION);
-		super.put(List.class, DEFAULT_LIST);
-		super.put(Map.class, DEFAULT_MAP);
-		super.put(Set.class, DEFAULT_SET);
+		put(Collection.class, DEFAULT_COLLECTION);
+		put(List.class, DEFAULT_LIST);
+		put(Map.class, DEFAULT_MAP);
+		put(Set.class, DEFAULT_SET);
 	}
 }

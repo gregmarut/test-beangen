@@ -35,7 +35,7 @@ public class ReverseStringTest
 		beanPropertyGenerator = new BeanPropertyGenerator();
 		
 		// override the string functionality to use reversed strings
-		beanPropertyGenerator.getProperties().getDefaultValues().put(String.class, new StringValue()
+		beanPropertyGenerator.getConfiguration().getDefaultValues().put(String.class, new StringValue()
 		{
 			@Override
 			public String getValue(Field field)

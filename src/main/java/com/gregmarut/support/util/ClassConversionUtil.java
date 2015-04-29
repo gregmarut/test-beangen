@@ -10,7 +10,7 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.beangenerator;
+package com.gregmarut.support.util;
 
 public class ClassConversionUtil
 {

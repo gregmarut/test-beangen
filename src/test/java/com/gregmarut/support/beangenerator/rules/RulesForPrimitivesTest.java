@@ -58,7 +58,7 @@ public class RulesForPrimitivesTest
 		ruleMapping.add(substituteShortFieldsStartingWithSome);
 		
 		// set this mapping object in the BeanPropertyGenerator
-		beanPropertyGenerator.getProperties().setRuleMapping(ruleMapping);
+		beanPropertyGenerator.getConfiguration().setRuleMapping(ruleMapping);
 	}
 	
 	@Test

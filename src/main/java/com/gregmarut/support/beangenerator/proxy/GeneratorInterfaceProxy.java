@@ -17,8 +17,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.Properties;
-import com.gregmarut.support.proxy.GetSetInterfaceProxy;
+import com.gregmarut.support.beangenerator.config.Configuration;
+import com.gregmarut.support.beantest.proxy.GetSetInterfaceProxy;
 
 public class GeneratorInterfaceProxy implements InvocationHandler
 {
@@ -41,10 +41,10 @@ public class GeneratorInterfaceProxy implements InvocationHandler
 	 * @return New proxy classes
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T createProxy(final Properties properties, final Class<?>... interfaces)
+	public static <T> T createProxy(final Configuration configuration, final Class<?>... interfaces)
 	{
 		// create the new BeanPropertyGenerator with caching enabled
-		BeanPropertyGenerator beanPropertyGenerator = new BeanPropertyGenerator(properties);
+		BeanPropertyGenerator beanPropertyGenerator = new BeanPropertyGenerator(configuration);
 		
 		// create a new proxy instance
 		return (T) Proxy.newProxyInstance(GetSetInterfaceProxy.class.getClassLoader(), interfaces,
