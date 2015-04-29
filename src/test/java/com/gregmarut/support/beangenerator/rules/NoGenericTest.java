@@ -59,7 +59,7 @@ public class NoGenericTest
 		ruleMapping.add(ruleWithNoGeneric4);
 		
 		// set this mapping object in the BeanPropertyGenerator
-		beanPropertyGenerator.getProperties().setRuleMapping(ruleMapping);
+		beanPropertyGenerator.getConfiguration().setRuleMapping(ruleMapping);
 	}
 	
 	@Test

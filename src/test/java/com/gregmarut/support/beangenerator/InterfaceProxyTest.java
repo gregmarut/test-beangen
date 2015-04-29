@@ -36,7 +36,7 @@ public class InterfaceProxyTest
 		beanPropertyGenerator = new BeanPropertyGenerator(false, true);
 		
 		// clear the interface mappings
-		beanPropertyGenerator.getProperties().getInterfaceMapper().clear();
+		beanPropertyGenerator.getConfiguration().getInterfaceMapper().clear();
 	}
 	
 	@Test

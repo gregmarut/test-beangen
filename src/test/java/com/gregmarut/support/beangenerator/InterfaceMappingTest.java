@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.InterfaceMapper;
+import com.gregmarut.support.beangenerator.config.InterfaceMapper;
 
 /**
  * A class to demonstrate how to use and define custom interface mappings. During bean
@@ -56,7 +56,7 @@ public class InterfaceMappingTest
 		interfaceMapper.put(List.class, ArrayList.class);
 		
 		// set the interface mapper in the BeanPropertyGenerator
-		beanPropertyGenerator.getProperties().setInterfaceMapper(interfaceMapper);
+		beanPropertyGenerator.getConfiguration().setInterfaceMapper(interfaceMapper);
 	}
 	
 	/**

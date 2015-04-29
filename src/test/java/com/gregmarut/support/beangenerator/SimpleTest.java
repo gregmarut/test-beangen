@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.DefaultValues;
+import com.gregmarut.support.beangenerator.config.DefaultValues;
 
 /**
  * This class demonstrates the simple uses of BeanPropertyGenerator

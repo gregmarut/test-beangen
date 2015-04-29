@@ -12,6 +12,8 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
+import com.gregmarut.support.beangenerator.config.InterfaceMapper;
+
 /**
  * This class is thrown whenever an attempt to initialize a class could not be completed. Once
  * example might be an attempt to instantiate an interface without properly mapping it to a concrete
