@@ -14,10 +14,9 @@ package com.gregmarut.support.beangenerator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.List;
 
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
@@ -220,44 +219,27 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	{
 		try
 		{
-			// make sure the collection is not null and that it is not a porxy
+			// make sure the collection is not null and that it is not a proxy
 			if (null != collection && !Proxy.isProxyClass(collection.getClass()))
 			{
-				// get the generic type for this collection
-				Type type = field.getGenericType();
+				// extract the generic classes for this field
+				List<Class<?>> genericClasses = ReflectionUtil.extractGenericClasses(field);
 				
-				// make sure there is a generic type assigned for this collection
-				if (type instanceof ParameterizedType)
+				// make sure the generic class was found
+				if (!genericClasses.isEmpty())
 				{
-					// attempt to extract the generic from this collection
-					ParameterizedType parameterizedTypes = (ParameterizedType) type;
-					
-					// check the length of the types
-					if (1 == parameterizedTypes.getActualTypeArguments().length)
-					{
-						// ensure that this actualy type argument is actually the instance
-						// of a class before
-						// attempting to recast it
-						if (parameterizedTypes.getActualTypeArguments()[0] instanceof Class)
-						{
-							final Class<?> clazz = (Class<?>) parameterizedTypes.getActualTypeArguments()[0];
-							populateCollection(collection, clazz);
-						}
-						else
-						{
-							logger.debug("Could not populate the list of "
-									+ parameterizedTypes.getActualTypeArguments()[0].toString()
-									+ " because the parameterized type could not be converted to an object.");
-						}
-					}
+					// populate this collection
+					populateCollection(collection, genericClasses.get(0));
+				}
+				else
+				{
+					logger.debug(
+							"Could not populate the collection of {} because the generic class type could not be determined.",
+							field.getName());
 				}
 			}
 		}
 		catch (InstantiationException e)
-		{
-			logger.error(e.getMessage(), e);
-		}
-		catch (IllegalArgumentException e)
 		{
 			logger.error(e.getMessage(), e);
 		}
