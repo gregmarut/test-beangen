@@ -40,6 +40,12 @@ public class RuleBuilder
 			this.clazz = clazz;
 		}
 		
+		/**
+		 * Set the condition to use for this rule
+		 * 
+		 * @param condition
+		 * @return
+		 */
 		public RBWhen<T> when(final Condition condition)
 		{
 			return new RBWhen<T>(this, condition);
@@ -63,11 +69,21 @@ public class RuleBuilder
 			this.condition = condition;
 		}
 		
+		/**
+		 * Set the value to be used when the condition evaluates to true
+		 * 
+		 * @param value
+		 */
 		public void thenReturn(final T value)
 		{
 			thenReturn(new StaticValue<T>(value, rbType.clazz));
 		}
 		
+		/**
+		 * Set the value to be used when the condition evaluates to true
+		 * 
+		 * @param value
+		 */
 		public void thenReturn(final Value<T> value)
 		{
 			// make sure the value is not null
@@ -76,11 +92,6 @@ public class RuleBuilder
 				throw new IllegalArgumentException("value cannot be null");
 			}
 			
-			build(value);
-		}
-		
-		public void build(final Value<T> value)
-		{
 			// build the rule
 			Rule<T> rule = new Rule<T>(condition, value);
 			

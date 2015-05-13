@@ -12,18 +12,15 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.rule;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
- * A class that contains a map of rules grouped by the type of parameter. Each rule is created and
- * grouped against one
- * specific type of parameter. These rules are used to handle specific cases for setter methods that
- * match the rule
- * pattern and parameter type. Whenever these methods are discovered during bean initialization,
- * their values are
+ * A class that contains a map of rules grouped by the type of parameter. Each rule is created and grouped against one
+ * specific type of parameter. These rules are used to handle specific cases for setter methods that match the rule
+ * pattern and parameter type. Whenever these methods are discovered during bean initialization, their values are
  * substituted with the value declared in the rule.
  * 
  * @author Greg Marut
@@ -31,7 +28,7 @@ import java.util.Map;
 public class RuleMapping
 {
 	// holds the map of rules for a specific type of class variable
-	private final Map<Class<?>, List<Rule<?>>> ruleMap;
+	private final Map<Class<?>, Deque<Rule<?>>> ruleMap;
 	
 	/**
 	 * Constructs a new RuleMapping object
@@ -39,7 +36,7 @@ public class RuleMapping
 	public RuleMapping()
 	{
 		// instantiate the rule map
-		ruleMap = new HashMap<Class<?>, List<Rule<?>>>();
+		ruleMap = new HashMap<Class<?>, Deque<Rule<?>>>();
 	}
 	
 	/**
@@ -48,7 +45,7 @@ public class RuleMapping
 	 * @param clazz
 	 * @return List<MethodMatchingRule>
 	 */
-	public List<Rule<?>> get(final Class<?> clazz)
+	public Deque<Rule<?>> get(final Class<?> clazz)
 	{
 		return ruleMap.get(clazz);
 	}
@@ -61,13 +58,13 @@ public class RuleMapping
 	public void add(final Rule<?> rule)
 	{
 		// fetch the list from the map of rules
-		List<Rule<?>> rules = get(rule.getReturnType());
+		Deque<Rule<?>> rules = get(rule.getReturnType());
 		
 		// check to see if the list is null
 		if (null == rules)
 		{
 			// create a new list of rules
-			rules = new LinkedList<Rule<?>>();
+			rules = new ArrayDeque<Rule<?>>();
 			
 			// put this list of rules into the map
 			ruleMap.put(rule.getReturnType(), rules);

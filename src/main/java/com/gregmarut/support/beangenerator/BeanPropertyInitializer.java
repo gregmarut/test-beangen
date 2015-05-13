@@ -540,14 +540,11 @@ public class BeanPropertyInitializer
 			{
 				// get the list of rules from the rule mapping based on this
 				// parameter type
-				List<Rule<?>> rules = configuration.getRuleMapping().get(nonPrimitiveClass);
+				Deque<Rule<?>> rules = configuration.getRuleMapping().get(nonPrimitiveClass);
 				
 				// for every rule in the list or until a rule is found
-				for (int i = 0; i < rules.size() && null == rule; i++)
+				for (Rule<?> currentRule : rules)
 				{
-					// get the current field matching rule
-					Rule<?> currentRule = rules.get(i);
-					
 					// check to see if this rule is a match
 					if (currentRule.isTrue(nonPrimitiveClass, field))
 					{
