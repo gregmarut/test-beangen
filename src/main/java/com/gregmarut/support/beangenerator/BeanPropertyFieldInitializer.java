@@ -43,6 +43,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 		super(configuration, cache);
 	}
 	
+	@Override
 	protected void populate(final Object object)
 	{
 		// retrieve a list of all of the methods defined in this class
@@ -50,9 +51,6 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 		
 		// set the data on the object
 		setData(object, fields);
-		
-		// populate the collections in this object with test data
-		populateCollections(object, fields);
 	}
 	
 	/**
@@ -85,7 +83,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 					if (null == rule)
 					{
 						// holds the value to set in the setter method
-						value = getValue(field, clazz);
+						value = getValue(clazz, field);
 					}
 					else
 					{
@@ -127,13 +125,26 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	/**
 	 * Converts a parameter type to a value to be set onto the method.
 	 * 
-	 * @param setterMethod
 	 * @param clazz
 	 * @return
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	private Object getValue(final Field field, final Class<?> clazz) throws InstantiationException,
+	private Object getValue(final Class<?> clazz) throws InstantiationException, IllegalAccessException
+	{
+		return getValue(clazz, null);
+	}
+	
+	/**
+	 * Converts a parameter type to a value to be set onto the method.
+	 * 
+	 * @param clazz
+	 * @param field
+	 * @return
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	private Object getValue(final Class<?> clazz, final Field field) throws InstantiationException,
 			IllegalAccessException
 	{
 		// holds the value of the object to return
@@ -146,7 +157,11 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 			if (Collection.class.isAssignableFrom(clazz))
 			{
 				// instantiate a new collection object
-				Collection<?> collection = (Collection<?>) instantiate(clazz);
+				@SuppressWarnings("unchecked")
+				Collection<Object> collection = (Collection<Object>) instantiate(clazz);
+				
+				// populate the collection
+				populateCollection(collection, field);
 				
 				// assign the collection as the object to set into the method
 				obj = collection;
@@ -156,10 +171,19 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 				// check to see if this value exists in the default values map
 				if (configuration.getDefaultValues().containsKey(clazz))
 				{
-					logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
-					
-					// retrieve the default value
-					obj = configuration.getDefaultValues().get(clazz).getValue(field);
+					// make sure the field is not null
+					if (null != field)
+					{
+						logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
+						
+						// retrieve the default value
+						obj = configuration.getDefaultValues().get(clazz).getValue(field);
+					}
+					else
+					{
+						// retrieve the default value
+						obj = configuration.getDefaultValues().get(clazz).getValue();
+					}
 				}
 				else
 				{
@@ -192,97 +216,81 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	 * 
 	 * @param fields
 	 */
-	@SuppressWarnings("unchecked")
-	private void populateCollections(final Object newObject, final Field[] fields)
+	private void populateCollection(final Collection<Object> collection, final Field field)
 	{
-		// for each of the fields
-		for (Field field : fields)
+		try
 		{
-			try
+			// make sure the collection is not null and that it is not a porxy
+			if (null != collection && !Proxy.isProxyClass(collection.getClass()))
 			{
-				// make sure this field is directly accessible
-				field.setAccessible(true);
+				// get the generic type for this collection
+				Type type = field.getGenericType();
 				
-				// extract the return type from this method
-				Class<?> returnType = field.getType();
-				
-				// check to see if this method is some sort of collection
-				if (Collection.class.isAssignableFrom(returnType))
+				// make sure there is a generic type assigned for this collection
+				if (type instanceof ParameterizedType)
 				{
-					// get the collection from the object
-					Collection<Object> collection = (Collection<Object>) field.get(newObject);
+					// attempt to extract the generic from this collection
+					ParameterizedType parameterizedTypes = (ParameterizedType) type;
 					
-					// make sure the collection is not null and that it is not a porxy
-					if (null != collection && !Proxy.isProxyClass(collection.getClass()))
+					// check the length of the types
+					if (1 == parameterizedTypes.getActualTypeArguments().length)
 					{
-						// get the generic type for this collection
-						Type type = field.getGenericType();
-						
-						// make sure there is a generic type assigned for this collection
-						if (type instanceof ParameterizedType)
+						// ensure that this actualy type argument is actually the instance
+						// of a class before
+						// attempting to recast it
+						if (parameterizedTypes.getActualTypeArguments()[0] instanceof Class)
 						{
-							// attempt to extract the generic from this collection
-							ParameterizedType parameterizedTypes = (ParameterizedType) type;
-							
-							// check the length of the types
-							if (1 == parameterizedTypes.getActualTypeArguments().length)
-							{
-								// ensure that this actualy type argument is actually the instance
-								// of a class before
-								// attempting to recast it
-								if (parameterizedTypes.getActualTypeArguments()[0] instanceof Class)
-								{
-									final Class<?> clazz = (Class<?>) parameterizedTypes.getActualTypeArguments()[0];
-									
-									logger.debug("Populating " + collection.getClass().getName()
-											+ " with objects of type " + clazz.getName());
-									
-									// for the specific number of times to auto fill lists
-									for (int i = 0; i < configuration.getCollectionAutoFillCount(); i++)
-									{
-										// initialize the new object
-										Object object = null;
-										
-										// create the object that instructs how to retrieve the
-										// object
-										Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
-										
-										// check to see if caching is enabled
-										if (configuration.useCache(clazz))
-										{
-											object = cache.getOrRetieve(clazz, retrieve);
-										}
-										else
-										{
-											object = retrieve.retrieve();
-										}
-										
-										// make sure the object is not null
-										if (null != object)
-										{
-											// add the object to the collection
-											collection.add(object);
-										}
-									}
-								}
-								else
-								{
-									logger.debug("Could not populate the list of "
-											+ parameterizedTypes.getActualTypeArguments()[0].toString()
-											+ " because the parameterized type could not be converted to an object.");
-								}
-							}
+							final Class<?> clazz = (Class<?>) parameterizedTypes.getActualTypeArguments()[0];
+							populateCollection(collection, clazz);
+						}
+						else
+						{
+							logger.debug("Could not populate the list of "
+									+ parameterizedTypes.getActualTypeArguments()[0].toString()
+									+ " because the parameterized type could not be converted to an object.");
 						}
 					}
 				}
 			}
-			catch (IllegalArgumentException e)
+		}
+		catch (InstantiationException e)
+		{
+			logger.error(e.getMessage(), e);
+		}
+		catch (IllegalArgumentException e)
+		{
+			logger.error(e.getMessage(), e);
+		}
+		catch (IllegalAccessException e)
+		{
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Populates a collection of objects with the given class type
+	 * 
+	 * @param collection
+	 * @param clazz
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	private void populateCollection(final Collection<Object> collection, Class<?> clazz) throws InstantiationException,
+			IllegalAccessException
+	{
+		logger.debug("Populating " + collection.getClass().getName() + " with objects of type " + clazz.getName());
+		
+		// for the specific number of times to auto fill lists
+		for (int i = 0; i < configuration.getCollectionAutoFillCount(); i++)
+		{
+			// get the value for this class type
+			Object object = getValue(clazz);
+			
+			// make sure the object is not null
+			if (null != object)
 			{
-				logger.error(e.getMessage(), e);
-			}
-			catch (IllegalAccessException e)
-			{
-				logger.error(e.getMessage(), e);
+				// add the object to the collection
+				collection.add(object);
 			}
 		}
 	}

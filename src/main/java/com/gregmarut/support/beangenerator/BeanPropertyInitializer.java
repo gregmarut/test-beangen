@@ -176,6 +176,11 @@ public abstract class BeanPropertyInitializer
 		return object;
 	}
 	
+	/**
+	 * Fully populates an object
+	 * 
+	 * @param object
+	 */
 	protected abstract void populate(final Object object);
 	
 	/**

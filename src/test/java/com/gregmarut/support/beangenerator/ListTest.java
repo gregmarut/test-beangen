@@ -21,6 +21,7 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
 
 public class ListTest
@@ -53,6 +54,27 @@ public class ListTest
 			assertEquals("firstName", testBean.getFirstName());
 			assertEquals("lastName", testBean.getLastName());
 			assertEquals("dateOfBirth", testBean.getDateOfBirth());
+		}
+	}
+	
+	@Test
+	public void interiorListTest()
+	{
+		// create a new test bean object
+		TestBean testBean = beanPropertyGenerator.get(TestBean.class);
+		
+		// make sure the list is filled correctly
+		Assert.assertEquals(BeanPropertyGenerator.DEFAULT_COLLECTION_AUTO_FILL_COUNT, testBean.getList().size());
+		
+		// for each of the objects
+		for (int i = 0; i < BeanPropertyGenerator.DEFAULT_COLLECTION_AUTO_FILL_COUNT; i++)
+		{
+			// make sure there are values as expected
+			AnotherTestBean anotherTestBean = testBean.getList().get(i);
+			Assert.assertEquals("something", anotherTestBean.getSomething());
+			Assert.assertEquals("someID", anotherTestBean.getSomeID());
+			Assert.assertEquals(1.0, anotherTestBean.getSomeDouble(), 0.0);
+			Assert.assertEquals(1, anotherTestBean.getSomeNumber());
 		}
 	}
 }
