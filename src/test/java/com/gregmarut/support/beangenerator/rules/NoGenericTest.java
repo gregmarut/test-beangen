@@ -21,10 +21,10 @@ import org.junit.Test;
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.rule.FieldNameMatchesRule;
-import com.gregmarut.support.beangenerator.rule.FieldNameStartsWithRule;
 import com.gregmarut.support.beangenerator.rule.Rule;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
+import com.gregmarut.support.beangenerator.rule.condition.FieldNameMatchesCondition;
+import com.gregmarut.support.beangenerator.rule.condition.FieldNameStartsWithCondition;
 
 /**
  * This class demonstrates and tests when generics are not set for the rules
@@ -47,10 +47,10 @@ public class NoGenericTest
 		RuleMapping ruleMapping = new RuleMapping();
 		
 		// create a new rule to replace all primitive fields that start with "some"
-		Rule<Integer> ruleWithNoGeneric = new FieldNameStartsWithRule<Integer>("some", 5);
-		Rule<Float> ruleWithNoGeneric2 = new FieldNameStartsWithRule<Float>("some", 3.14f);
-		Rule<Integer> ruleWithNoGeneric3 = new FieldNameMatchesRule<Integer>("integer", 7);
-		Rule<String> ruleWithNoGeneric4 = new FieldNameMatchesRule<String>("firstName", "John");
+		Rule<Integer> ruleWithNoGeneric = new Rule<Integer>(new FieldNameStartsWithCondition("some"), 5);
+		Rule<Float> ruleWithNoGeneric2 = new Rule<Float>(new FieldNameStartsWithCondition("some"), 3.14f);
+		Rule<Integer> ruleWithNoGeneric3 = new Rule<Integer>(new FieldNameMatchesCondition("integer"), 7);
+		Rule<String> ruleWithNoGeneric4 = new Rule<String>(new FieldNameMatchesCondition("firstName"), "John");
 		
 		// add this rule to the mapping object
 		ruleMapping.add(ruleWithNoGeneric);

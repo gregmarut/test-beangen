@@ -25,9 +25,9 @@ import org.junit.Test;
 
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.rule.FieldNameMatchesRule;
 import com.gregmarut.support.beangenerator.rule.Rule;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
+import com.gregmarut.support.beangenerator.rule.condition.FieldNameMatchesCondition;
 
 /**
  * This class demonstrates how to create rules for handling special cases.
@@ -54,12 +54,14 @@ public class FieldNameMatchesRuleTest
 		// be set to a number "12345". This rule tells the BeanPropertyGenerator to handle these
 		// cases specially. Otherwise, the code that is assuming that these string fields contain
 		// numbers and will fail.
-		Rule<String> substituteStringAccountIDField = new FieldNameMatchesRule<String>("accountID", "12345");
+		Rule<String> substituteStringAccountIDField = new Rule<String>(new FieldNameMatchesCondition("accountID"),
+				"12345");
 		
 		// create a new matching rule to set the date fields to dates instead of the method name.
 		// The code is expecting these fields to contain date strings that can be parsed into date
 		// objects
-		Rule<String> substituteStringDateOfBirthField = new FieldNameMatchesRule<String>("dateOfBirth", "01/01/2011");
+		Rule<String> substituteStringDateOfBirthField = new Rule<String>(new FieldNameMatchesCondition("dateOfBirth"),
+				"01/01/2011");
 		
 		// add this rule to the mapping object
 		ruleMapping.add(substituteStringAccountIDField);
@@ -70,8 +72,7 @@ public class FieldNameMatchesRuleTest
 	}
 	
 	/**
-	 * A test to assure that methods that match defined rules are properly handled as expected based
-	 * on the above rules.
+	 * A test to assure that methods that match defined rules are properly handled as expected based on the above rules.
 	 */
 	@Test
 	public void ruleTest()

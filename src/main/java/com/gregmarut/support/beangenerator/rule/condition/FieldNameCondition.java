@@ -10,11 +10,9 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.beangenerator.rule;
+package com.gregmarut.support.beangenerator.rule.condition;
 
-import com.gregmarut.support.beangenerator.value.Value;
-
-public abstract class FieldNameRule<V> extends Rule<V>
+public abstract class FieldNameCondition implements Condition
 {
 	// holds the pattern of the field name to match
 	protected final String pattern;
@@ -25,31 +23,8 @@ public abstract class FieldNameRule<V> extends Rule<V>
 	 * @param pattern
 	 * @param value
 	 */
-	public FieldNameRule(final String pattern, final Value<V> value)
+	public FieldNameCondition(final String pattern)
 	{
-		super(value);
-		
-		// make sure the field name is not null
-		if (null != pattern)
-		{
-			this.pattern = pattern;
-		}
-		else
-		{
-			throw new IllegalArgumentException("pattern cannot be null.");
-		}
-	}
-	
-	/**
-	 * Creates a new simple Rule to check the pattern against the field name
-	 * 
-	 * @param pattern
-	 * @param value
-	 */
-	public FieldNameRule(final String pattern, final V value)
-	{
-		super(value);
-		
 		// make sure the field name is not null
 		if (null != pattern)
 		{

@@ -21,9 +21,9 @@ import org.junit.Test;
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.rule.FieldNameEndsWithRule;
 import com.gregmarut.support.beangenerator.rule.Rule;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
+import com.gregmarut.support.beangenerator.rule.condition.FieldNameEndsWithCondition;
 
 /**
  * This class demonstrates how to create rules for handling special cases.
@@ -50,7 +50,7 @@ public class FieldNameEndsWithRuleTest
 		// be set to a number "12345". This rule tells the BeanPropertyGenerator to handle these
 		// cases specially. Otherwise, the code that is assuming that these string fields contain
 		// numbers and will fail.
-		Rule<String> substituteStringFieldsEndingInID = new FieldNameEndsWithRule<String>("ID", "12345");
+		Rule<String> substituteStringFieldsEndingInID = new Rule<String>(new FieldNameEndsWithCondition("ID"), "12345");
 		
 		// add this rule to the mapping object
 		ruleMapping.add(substituteStringFieldsEndingInID);
@@ -60,8 +60,7 @@ public class FieldNameEndsWithRuleTest
 	}
 	
 	/**
-	 * A test to assure that methods that match defined rules are properly handled as expected based
-	 * on the above rules.
+	 * A test to assure that methods that match defined rules are properly handled as expected based on the above rules.
 	 */
 	@Test
 	public void ruleTest()

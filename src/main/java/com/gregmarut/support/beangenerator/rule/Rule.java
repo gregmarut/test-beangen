@@ -12,6 +12,9 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.rule;
 
+import java.lang.reflect.Field;
+
+import com.gregmarut.support.beangenerator.rule.condition.Condition;
 import com.gregmarut.support.beangenerator.value.StaticValue;
 import com.gregmarut.support.beangenerator.value.Value;
 import com.gregmarut.support.util.ClassConversionUtil;
@@ -21,31 +24,48 @@ import com.gregmarut.support.util.ClassConversionUtil;
  * 
  * @author Greg Marut
  */
-public abstract class Rule<V>
+public class Rule<V> implements Condition
 {
+	// holds the condition for this rule
+	private final Condition condition;
+	
 	// holds the value for this rule
 	private final Value<V> value;
 	
 	@SuppressWarnings("unchecked")
-	public Rule(final V value)
+	public Rule(final Condition condition, final V value)
 	{
+		// make sure the condition is not null
+		if (null == condition)
+		{
+			throw new IllegalArgumentException("condition cannot be null");
+		}
+		
 		// make sure the value is not null
 		if (null == value)
 		{
 			throw new IllegalArgumentException("value cannot be null");
 		}
 		
+		this.condition = condition;
 		this.value = new StaticValue<V>(value, (Class<V>) value.getClass());
 	}
 	
-	public Rule(final Value<V> value)
+	public Rule(final Condition condition, final Value<V> value)
 	{
+		// make sure the condition is not null
+		if (null == condition)
+		{
+			throw new IllegalArgumentException("condition cannot be null");
+		}
+		
 		// make sure the value is not null
 		if (null == value)
 		{
 			throw new IllegalArgumentException("value cannot be null");
 		}
 		
+		this.condition = condition;
 		this.value = value;
 	}
 	
@@ -70,14 +90,9 @@ public abstract class Rule<V>
 		return value;
 	}
 	
-	/**
-	 * Determines if this rule matches the given class type and name
-	 * 
-	 * @param clazz
-	 * The type of value that is being checked
-	 * @param name
-	 * The name of the attribute
-	 * @return
-	 */
-	public abstract boolean isMatch(final Class<?> clazz, final String name);
+	@Override
+	public boolean isTrue(Class<?> clazz, Field field)
+	{
+		return condition.isTrue(clazz, field);
+	}
 }

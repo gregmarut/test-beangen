@@ -10,26 +10,28 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.beangenerator.rule;
+package com.gregmarut.support.beangenerator.rule.condition;
 
-import com.gregmarut.support.beangenerator.value.Value;
+import java.lang.reflect.Field;
 
-public class FieldNameMatchesRule<V> extends FieldNameRule<V>
+public class FieldNameStartsWithCondition extends FieldNameCondition
 {
-	public FieldNameMatchesRule(String pattern, V value)
+	public FieldNameStartsWithCondition(final String pattern)
 	{
-		super(pattern, value);
-	}
-	
-	public FieldNameMatchesRule(final String pattern, final Value<V> value)
-	{
-		super(pattern, value);
+		super(pattern);
 	}
 	
 	@Override
-	public boolean isMatch(final Class<?> clazz, final String name)
+	public boolean isTrue(final Class<?> clazz, final Field field)
 	{
-		// check to see if the field names match
-		return pattern.equals(name);
+		// make sure the name is not null
+		if (null != field.getName())
+		{
+			return field.getName().startsWith(pattern);
+		}
+		else
+		{
+			return false;
+		}
 	}
 }

@@ -276,17 +276,4 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 			}
 		}
 	}
-	
-	/**
-	 * Checks the {@link configuration.getRuleMapping()} to determine if there are any {@link Rule} that match this
-	 * specific field name. If a match is found, the {@link Rule} is returned.
-	 * 
-	 * @param field
-	 * @param clazz
-	 * @return Rule
-	 */
-	protected Rule<?> checkForMatchingRule(final Field field, final Class<?> clazz)
-	{
-		return super.checkForMatchingRule(field.getName(), clazz);
-	}
 }

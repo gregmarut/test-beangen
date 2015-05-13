@@ -12,6 +12,7 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -276,13 +277,13 @@ public abstract class BeanPropertyInitializer
 	
 	/**
 	 * Checks the {@link configuration.getRuleMapping()} to determine if there are any {@link Rule} that match this
-	 * specific setter method. If a match is found, the {@link Rule} is returned.
+	 * specific field name. If a match is found, the {@link Rule} is returned.
 	 * 
-	 * @param name
+	 * @param field
 	 * @param clazz
 	 * @return Rule
 	 */
-	protected Rule<?> checkForMatchingRule(final String name, final Class<?> clazz)
+	protected Rule<?> checkForMatchingRule(final Field field, final Class<?> clazz)
 	{
 		// holds the value to return
 		Rule<?> rule = null;
@@ -313,7 +314,7 @@ public abstract class BeanPropertyInitializer
 					Rule<?> currentRule = rules.get(i);
 					
 					// check to see if this rule is a match
-					if (currentRule.isMatch(nonPrimitiveClass, name))
+					if (currentRule.isTrue(nonPrimitiveClass, field))
 					{
 						rule = currentRule;
 					}

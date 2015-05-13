@@ -21,9 +21,9 @@ import org.junit.Test;
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.rule.FieldNameStartsWithRule;
 import com.gregmarut.support.beangenerator.rule.Rule;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
+import com.gregmarut.support.beangenerator.rule.condition.FieldNameStartsWithCondition;
 
 /**
  * This class demonstrates and tests that primitives are properly assigned with rules
@@ -46,10 +46,14 @@ public class RulesForPrimitivesTest
 		RuleMapping ruleMapping = new RuleMapping();
 		
 		// create a new rule to replace all primitive fields that start with "some"
-		Rule<Integer> substituteIntegerFieldsStartingWithSome = new FieldNameStartsWithRule<Integer>("some", 5);
-		Rule<Float> substituteFloatFieldsStartingWithSome = new FieldNameStartsWithRule<Float>("some", 3.14f);
-		Rule<Double> substituteDoubleFieldsStartingWithSome = new FieldNameStartsWithRule<Double>("some", 7.4562);
-		Rule<Short> substituteShortFieldsStartingWithSome = new FieldNameStartsWithRule<Short>("some", (short) 9);
+		Rule<Integer> substituteIntegerFieldsStartingWithSome = new Rule<Integer>(new FieldNameStartsWithCondition(
+				"some"), 5);
+		Rule<Float> substituteFloatFieldsStartingWithSome = new Rule<Float>(new FieldNameStartsWithCondition("some"),
+				3.14f);
+		Rule<Double> substituteDoubleFieldsStartingWithSome = new Rule<Double>(
+				new FieldNameStartsWithCondition("some"), 7.4562);
+		Rule<Short> substituteShortFieldsStartingWithSome = new Rule<Short>(new FieldNameStartsWithCondition("some"),
+				(short) 9);
 		
 		// add this rule to the mapping object
 		ruleMapping.add(substituteIntegerFieldsStartingWithSome);
@@ -68,10 +72,10 @@ public class RulesForPrimitivesTest
 		TestBean testBean = beanPropertyGenerator.get(TestBean.class);
 		AnotherTestBean anotherTestBean = testBean.getAnotherTestBean();
 		
-		//make sure that the string did not change
+		// make sure that the string did not change
 		assertSame("someID", anotherTestBean.getSomeID());
 		
-		//verify the primitive values were properly set
+		// verify the primitive values were properly set
 		assertEquals(5, anotherTestBean.getSomeNumber());
 		assertEquals(3.14f, anotherTestBean.getSomeFloat(), 0f);
 		assertEquals(7.4562, anotherTestBean.getSomeDouble(), 0f);
