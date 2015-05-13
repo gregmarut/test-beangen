@@ -21,8 +21,7 @@ import org.junit.Test;
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.rule.Rule;
-import com.gregmarut.support.beangenerator.rule.RuleMapping;
+import com.gregmarut.support.beangenerator.rule.RuleBuilder;
 import com.gregmarut.support.beangenerator.rule.condition.FieldNameEndsWithCondition;
 
 /**
@@ -42,21 +41,15 @@ public class FieldNameEndsWithRuleTest
 		// create a new BeanPropertyGenerator
 		beanPropertyGenerator = new BeanPropertyGenerator();
 		
-		// create a new rule mapping object
-		RuleMapping ruleMapping = new RuleMapping();
+		// create a new rule builder
+		RuleBuilder ruleBuilder = beanPropertyGenerator.getConfiguration().createRuleBuilder();
 		
 		// create a new rule to replace all fields that end in "ID"
 		// Therefore, for these specific cases, we want the "ID" fields to
 		// be set to a number "12345". This rule tells the BeanPropertyGenerator to handle these
 		// cases specially. Otherwise, the code that is assuming that these string fields contain
 		// numbers and will fail.
-		Rule<String> substituteStringFieldsEndingInID = new Rule<String>(new FieldNameEndsWithCondition("ID"), "12345");
-		
-		// add this rule to the mapping object
-		ruleMapping.add(substituteStringFieldsEndingInID);
-		
-		// set this mapping object in the BeanPropertyGenerator
-		beanPropertyGenerator.getConfiguration().setRuleMapping(ruleMapping);
+		ruleBuilder.forType(String.class).when(new FieldNameEndsWithCondition("ID")).thenReturn("12345");
 	}
 	
 	/**

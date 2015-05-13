@@ -21,8 +21,7 @@ import org.junit.Test;
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.rule.Rule;
-import com.gregmarut.support.beangenerator.rule.RuleMapping;
+import com.gregmarut.support.beangenerator.rule.RuleBuilder;
 import com.gregmarut.support.beangenerator.rule.condition.FieldNameStartsWithCondition;
 
 /**
@@ -42,27 +41,14 @@ public class RulesForPrimitivesTest
 		// create a new BeanPropertyGenerator
 		beanPropertyGenerator = new BeanPropertyGenerator();
 		
-		// create a new rule mapping object
-		RuleMapping ruleMapping = new RuleMapping();
+		// create a new rule builder
+		RuleBuilder ruleBuilder = beanPropertyGenerator.getConfiguration().createRuleBuilder();
 		
 		// create a new rule to replace all primitive fields that start with "some"
-		Rule<Integer> substituteIntegerFieldsStartingWithSome = new Rule<Integer>(new FieldNameStartsWithCondition(
-				"some"), 5);
-		Rule<Float> substituteFloatFieldsStartingWithSome = new Rule<Float>(new FieldNameStartsWithCondition("some"),
-				3.14f);
-		Rule<Double> substituteDoubleFieldsStartingWithSome = new Rule<Double>(
-				new FieldNameStartsWithCondition("some"), 7.4562);
-		Rule<Short> substituteShortFieldsStartingWithSome = new Rule<Short>(new FieldNameStartsWithCondition("some"),
-				(short) 9);
-		
-		// add this rule to the mapping object
-		ruleMapping.add(substituteIntegerFieldsStartingWithSome);
-		ruleMapping.add(substituteFloatFieldsStartingWithSome);
-		ruleMapping.add(substituteDoubleFieldsStartingWithSome);
-		ruleMapping.add(substituteShortFieldsStartingWithSome);
-		
-		// set this mapping object in the BeanPropertyGenerator
-		beanPropertyGenerator.getConfiguration().setRuleMapping(ruleMapping);
+		ruleBuilder.forType(Integer.class).when(new FieldNameStartsWithCondition("some")).thenReturn(5);
+		ruleBuilder.forType(Float.class).when(new FieldNameStartsWithCondition("some")).thenReturn(3.14f);
+		ruleBuilder.forType(Double.class).when(new FieldNameStartsWithCondition("some")).thenReturn(7.4562);
+		ruleBuilder.forType(Short.class).when(new FieldNameStartsWithCondition("some")).thenReturn((short) 9);
 	}
 	
 	@Test

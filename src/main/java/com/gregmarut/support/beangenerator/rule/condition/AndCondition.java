@@ -14,16 +14,32 @@ package com.gregmarut.support.beangenerator.rule.condition;
 
 import java.lang.reflect.Field;
 
-public interface Condition
+/**
+ * Considered true if all conditions are also true, false otherwise
+ * 
+ * @author Greg Marut
+ */
+public class AndCondition extends MultipleConditions
 {
-	/**
-	 * Determines if this condition results to true
-	 * 
-	 * @param clazz
-	 *            The type of value that is being checked
-	 * @param field
-	 *            The field of the attribute
-	 * @return
-	 */
-	boolean isTrue(final Class<?> clazz, final Field field);
+	public AndCondition(final Condition... conditions)
+	{
+		super(conditions);
+	}
+	
+	@Override
+	public boolean isTrue(final Class<?> clazz, final Field field)
+	{
+		// for each of the conditions
+		for (Condition rule : conditions)
+		{
+			// check if any condition is false
+			if (!rule.isTrue(clazz, field))
+			{
+				return false;
+			}
+		}
+		
+		// all of the conditions returned true
+		return true;
+	}
 }

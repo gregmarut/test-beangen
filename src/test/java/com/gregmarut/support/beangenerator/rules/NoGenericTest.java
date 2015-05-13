@@ -21,9 +21,7 @@ import org.junit.Test;
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.rule.Rule;
-import com.gregmarut.support.beangenerator.rule.RuleMapping;
-import com.gregmarut.support.beangenerator.rule.condition.FieldNameMatchesCondition;
+import com.gregmarut.support.beangenerator.rule.RuleBuilder;
 import com.gregmarut.support.beangenerator.rule.condition.FieldNameStartsWithCondition;
 
 /**
@@ -43,23 +41,14 @@ public class NoGenericTest
 		// create a new BeanPropertyGenerator
 		beanPropertyGenerator = new BeanPropertyGenerator();
 		
-		// create a new rule mapping object
-		RuleMapping ruleMapping = new RuleMapping();
+		// create a new rule builder
+		RuleBuilder ruleBuilder = beanPropertyGenerator.getConfiguration().createRuleBuilder();
 		
 		// create a new rule to replace all primitive fields that start with "some"
-		Rule<Integer> ruleWithNoGeneric = new Rule<Integer>(new FieldNameStartsWithCondition("some"), 5);
-		Rule<Float> ruleWithNoGeneric2 = new Rule<Float>(new FieldNameStartsWithCondition("some"), 3.14f);
-		Rule<Integer> ruleWithNoGeneric3 = new Rule<Integer>(new FieldNameMatchesCondition("integer"), 7);
-		Rule<String> ruleWithNoGeneric4 = new Rule<String>(new FieldNameMatchesCondition("firstName"), "John");
-		
-		// add this rule to the mapping object
-		ruleMapping.add(ruleWithNoGeneric);
-		ruleMapping.add(ruleWithNoGeneric2);
-		ruleMapping.add(ruleWithNoGeneric3);
-		ruleMapping.add(ruleWithNoGeneric4);
-		
-		// set this mapping object in the BeanPropertyGenerator
-		beanPropertyGenerator.getConfiguration().setRuleMapping(ruleMapping);
+		ruleBuilder.forType(Integer.class).when(new FieldNameStartsWithCondition("some")).thenReturn(5);
+		ruleBuilder.forType(Float.class).when(new FieldNameStartsWithCondition("some")).thenReturn(3.14f);
+		ruleBuilder.forType(Integer.class).when(new FieldNameStartsWithCondition("integer")).thenReturn(7);
+		ruleBuilder.forType(String.class).when(new FieldNameStartsWithCondition("firstName")).thenReturn("John");
 	}
 	
 	@Test

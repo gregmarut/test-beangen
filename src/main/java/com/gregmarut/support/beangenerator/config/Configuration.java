@@ -14,6 +14,7 @@ package com.gregmarut.support.beangenerator.config;
 
 import java.io.Serializable;
 
+import com.gregmarut.support.beangenerator.rule.RuleBuilder;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
 
 public class Configuration implements Serializable
@@ -199,5 +200,10 @@ public class Configuration implements Serializable
 		{
 			return isCache();
 		}
+	}
+	
+	public RuleBuilder createRuleBuilder()
+	{
+		return new RuleBuilder(getRuleMapping());
 	}
 }
