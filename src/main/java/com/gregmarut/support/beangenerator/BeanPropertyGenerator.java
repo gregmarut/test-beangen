@@ -15,9 +15,6 @@ package com.gregmarut.support.beangenerator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.config.CacheOverride;
@@ -50,9 +47,6 @@ public final class BeanPropertyGenerator
 	public static final int DEFAULT_COLLECTION_AUTO_FILL_COUNT = 3;
 	
 	// ** Objects **//
-	// instantiate the logger
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	
 	// holds the cache for this BeanPropertyGenerator
 	private final Cache cache;
 	

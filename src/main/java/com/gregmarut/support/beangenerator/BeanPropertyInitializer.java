@@ -109,7 +109,7 @@ public abstract class BeanPropertyInitializer
 			// check to see if caching is enabled
 			if (configuration.isCache())
 			{
-				logger.debug("Adding " + clazz.getName() + " to the cache");
+				logger.debug("Adding {} to the cache", clazz.getName());
 				
 				// add this object to the model map
 				cache.put(clazz, object);
@@ -137,8 +137,8 @@ public abstract class BeanPropertyInitializer
 		else
 		{
 			// an infinite loop was detected
-			logger.info("Cyclical dependency detected while attempting to initialize " + clazz.getName()
-					+ ". Skipping object population.");
+			logger.info("Cyclical dependency detected while attempting to initialize {}. Skipping object population.",
+					clazz.getName());
 			object = null;
 		}
 		
@@ -160,7 +160,7 @@ public abstract class BeanPropertyInitializer
 		// configuration.getDefaultValues()
 		if (null != object)
 		{
-			logger.debug("Initializing " + object.getClass().getName());
+			logger.debug("Initializing {}", object.getClass().getName());
 			
 			// push this class onto the stack
 			instantiationStack.push(object.getClass());
@@ -207,7 +207,7 @@ public abstract class BeanPropertyInitializer
 			
 			if (null != concreteClass)
 			{
-				logger.debug(concreteClass.getName() + " found to replace interface " + clazz.getName());
+				logger.debug("{} found to replace interface {}", concreteClass.getName(), clazz.getName());
 				
 				// instantiate a new instance of the concrete class
 				newObject = initialize(concreteClass);
@@ -250,7 +250,7 @@ public abstract class BeanPropertyInitializer
 			// check to see if this value exists in the default values map
 			if (configuration.getDefaultValues().containsKey(clazz))
 			{
-				logger.debug("Found default value for " + clazz.getName());
+				logger.debug("Found default value for {}", clazz.getName());
 				
 				// retrieve the default value
 				newObject = (T) configuration.getDefaultValues().get(clazz).getValue();

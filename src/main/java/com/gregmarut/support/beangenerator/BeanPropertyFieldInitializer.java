@@ -260,7 +260,7 @@ public final class BeanPropertyFieldInitializer extends BeanPropertyInitializer
 	private void populateCollection(final Collection<Object> collection, Class<?> clazz) throws InstantiationException,
 			IllegalAccessException
 	{
-		logger.debug("Populating " + collection.getClass().getName() + " with objects of type " + clazz.getName());
+		logger.debug("Populating {} with objects of type {}", collection.getClass().getName(), clazz.getName());
 		
 		// for the specific number of times to auto fill lists
 		for (int i = 0; i < configuration.getCollectionAutoFillCount(); i++)
