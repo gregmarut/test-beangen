@@ -254,6 +254,6 @@ public final class BeanPropertyGenerator
 	protected final BeanPropertyInitializer getBeanPropertyInitializer()
 	{
 		// create a new instance of the initializer so that it is thread safe.
-		return new BeanPropertyFieldInitializer(configuration, cache);
+		return new BeanPropertyInitializer(configuration, cache);
 	}
 }
