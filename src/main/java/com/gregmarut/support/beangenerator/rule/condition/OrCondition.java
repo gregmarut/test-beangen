@@ -27,13 +27,13 @@ public class OrCondition extends MultipleConditions
 	}
 	
 	@Override
-	public boolean isTrue(final Class<?> clazz, final Field field)
+	public boolean isTrue(final Field field)
 	{
 		// for each of the conditions
 		for (Condition rule : conditions)
 		{
 			// if any of the conditions are true
-			if (rule.isTrue(clazz, field))
+			if (rule.isTrue(field))
 			{
 				return true;
 			}

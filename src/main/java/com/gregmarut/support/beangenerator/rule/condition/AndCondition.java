@@ -27,13 +27,13 @@ public class AndCondition extends MultipleConditions
 	}
 	
 	@Override
-	public boolean isTrue(final Class<?> clazz, final Field field)
+	public boolean isTrue(final Field field)
 	{
 		// for each of the conditions
 		for (Condition rule : conditions)
 		{
 			// check if any condition is false
-			if (!rule.isTrue(clazz, field))
+			if (!rule.isTrue(field))
 			{
 				return false;
 			}

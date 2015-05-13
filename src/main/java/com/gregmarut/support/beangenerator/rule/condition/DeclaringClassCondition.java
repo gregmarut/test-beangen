@@ -14,14 +14,23 @@ package com.gregmarut.support.beangenerator.rule.condition;
 
 import java.lang.reflect.Field;
 
-public interface Condition
+/**
+ * A condition for checking if a field is a member of a specific class
+ * 
+ * @author Greg Marut
+ */
+public class DeclaringClassCondition implements Condition
 {
-	/**
-	 * Determines if this condition results to true
-	 * 
-	 * @param field
-	 *            The field of the attribute
-	 * @return
-	 */
-	boolean isTrue(final Field field);
+	private final Class<?> declaringClass;
+	
+	public DeclaringClassCondition(final Class<?> declaringClass)
+	{
+		this.declaringClass = declaringClass;
+	}
+	
+	@Override
+	public boolean isTrue(final Field field)
+	{
+		return field.getDeclaringClass().equals(declaringClass);
+	}
 }

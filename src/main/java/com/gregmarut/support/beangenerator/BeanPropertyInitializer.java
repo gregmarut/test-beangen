@@ -526,12 +526,10 @@ public class BeanPropertyInitializer
 		// make sure the rule mapping object is not null
 		if (null != configuration.getRuleMapping())
 		{
-			// convert the class from its primitive value if applicable,
-			// otherwise use the original
-			// value
-			// The reason that primitives have to be cast up is because Generics
-			// does not support
-			// primitives.
+			/*
+			 * convert the class from its primitive value if applicable, otherwise use the original value The reason
+			 * that primitives have to be cast up is because Generics does not support primitives.
+			 */
 			Class<?> nonPrimitiveClass = ClassConversionUtil.convertToNonPrimitive(clazz);
 			
 			// check to see if the rule mapping contains rules for this
@@ -546,7 +544,7 @@ public class BeanPropertyInitializer
 				for (Rule<?> currentRule : rules)
 				{
 					// check to see if this rule is a match
-					if (currentRule.isTrue(nonPrimitiveClass, field))
+					if (currentRule.isTrue(field))
 					{
 						rule = currentRule;
 					}
