@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
+import com.gregmarut.support.beangenerator.config.CacheOverrideType;
 
 /**
  * This test demonstrates that the cache is working correctly
@@ -89,7 +90,7 @@ public class CacheTest
 	{
 		// create a new BeanPropertyGenerator
 		BeanPropertyGenerator beanPropertyGenerator = new BeanPropertyGenerator(false);
-		beanPropertyGenerator.getConfiguration().getCacheOverride().put(TestBean.class, true);
+		beanPropertyGenerator.getConfiguration().getCacheOverride().put(TestBean.class, CacheOverrideType.CACHE);
 		
 		// create a new test object
 		TestBean testBean1 = beanPropertyGenerator.get(TestBean.class);

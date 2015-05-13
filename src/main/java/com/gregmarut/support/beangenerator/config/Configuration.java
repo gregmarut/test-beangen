@@ -173,12 +173,27 @@ public class Configuration implements Serializable
 		this.proxyUnmappedInterfaces = proxyUnmappedInterfaces;
 	}
 	
+	/**
+	 * Determines if this specific class should use the cache or not
+	 * 
+	 * @param clazz
+	 * @return
+	 */
 	public boolean useCache(final Class<?> clazz)
 	{
 		// check to see if the cache override contains this class
 		if (cacheOverride.containsKey(clazz))
 		{
-			return cacheOverride.get(clazz);
+			// switch based on the cache enum
+			switch (cacheOverride.get(clazz))
+			{
+				case CACHE:
+					return true;
+				case DO_NOT_CACHE:
+					return false;
+				default:
+					return isCache();
+			}
 		}
 		else
 		{
