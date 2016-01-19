@@ -10,12 +10,17 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.beangenerator;
+package com.gregmarut.support.beangenerator.config;
 
+import java.io.Serializable;
+
+import com.gregmarut.support.beangenerator.rule.RuleBuilder;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
 
-public class Properties
+public class Configuration implements Serializable
 {
+	private static final long serialVersionUID = 370522421960645850L;
+	
 	// holds the default values to use for initializing model objects
 	private DefaultValues defaultValues;
 	
@@ -24,6 +29,9 @@ public class Properties
 	
 	// holds the rule mapping for setting custom values on specific fields
 	private RuleMapping ruleMapping;
+	
+	// holds the object that instructions which classes to either cache or omit from cache
+	private CacheOverride cacheOverride;
 	
 	// holds the number of objects to auto populate into a collection whenever
 	// one is created
@@ -58,8 +66,7 @@ public class Properties
 	}
 	
 	/**
-	 * Sets the {@link InterfaceMapper} to determine which concrete classes should be instantiated
-	 * in place of
+	 * Sets the {@link InterfaceMapper} to determine which concrete classes should be instantiated in place of
 	 * pre-defined interfaces
 	 * 
 	 * @param interfaceMapper
@@ -100,6 +107,23 @@ public class Properties
 	}
 	
 	/**
+	 * @return the cacheOverride
+	 */
+	public CacheOverride getCacheOverride()
+	{
+		return cacheOverride;
+	}
+	
+	/**
+	 * @param cacheOverride
+	 *            the cacheOverride to set
+	 */
+	public void setCacheOverride(CacheOverride cacheOverride)
+	{
+		this.cacheOverride = cacheOverride;
+	}
+	
+	/**
 	 * Determines if a cache should be used when creating objects
 	 * 
 	 * @return boolean
@@ -115,8 +139,7 @@ public class Properties
 	}
 	
 	/**
-	 * Sets the number of objects that should be pre-populated into collections whenever one is
-	 * created
+	 * Sets the number of objects that should be pre-populated into collections whenever one is created
 	 * 
 	 * @param collectionAutoFillCount
 	 */
@@ -149,5 +172,38 @@ public class Properties
 	public void setProxyUnmappedInterfaces(boolean proxyUnmappedInterfaces)
 	{
 		this.proxyUnmappedInterfaces = proxyUnmappedInterfaces;
+	}
+	
+	/**
+	 * Determines if this specific class should use the cache or not
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public boolean useCache(final Class<?> clazz)
+	{
+		// check to see if the cache override contains this class
+		if (cacheOverride.containsKey(clazz))
+		{
+			// switch based on the cache enum
+			switch (cacheOverride.get(clazz))
+			{
+				case CACHE:
+					return true;
+				case DO_NOT_CACHE:
+					return false;
+				default:
+					return isCache();
+			}
+		}
+		else
+		{
+			return isCache();
+		}
+	}
+	
+	public RuleBuilder createRuleBuilder()
+	{
+		return new RuleBuilder(getRuleMapping());
 	}
 }

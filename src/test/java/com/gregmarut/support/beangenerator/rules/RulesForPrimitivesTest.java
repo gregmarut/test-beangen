@@ -21,9 +21,8 @@ import org.junit.Test;
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.rule.FieldNameStartsWithRule;
-import com.gregmarut.support.beangenerator.rule.Rule;
-import com.gregmarut.support.beangenerator.rule.RuleMapping;
+import com.gregmarut.support.beangenerator.rule.RuleBuilder;
+import com.gregmarut.support.beangenerator.rule.condition.FieldNameStartsWithCondition;
 
 /**
  * This class demonstrates and tests that primitives are properly assigned with rules
@@ -42,23 +41,14 @@ public class RulesForPrimitivesTest
 		// create a new BeanPropertyGenerator
 		beanPropertyGenerator = new BeanPropertyGenerator();
 		
-		// create a new rule mapping object
-		RuleMapping ruleMapping = new RuleMapping();
+		// create a new rule builder
+		RuleBuilder ruleBuilder = beanPropertyGenerator.getConfiguration().createRuleBuilder();
 		
 		// create a new rule to replace all primitive fields that start with "some"
-		Rule<Integer> substituteIntegerFieldsStartingWithSome = new FieldNameStartsWithRule<Integer>("some", 5);
-		Rule<Float> substituteFloatFieldsStartingWithSome = new FieldNameStartsWithRule<Float>("some", 3.14f);
-		Rule<Double> substituteDoubleFieldsStartingWithSome = new FieldNameStartsWithRule<Double>("some", 7.4562);
-		Rule<Short> substituteShortFieldsStartingWithSome = new FieldNameStartsWithRule<Short>("some", (short) 9);
-		
-		// add this rule to the mapping object
-		ruleMapping.add(substituteIntegerFieldsStartingWithSome);
-		ruleMapping.add(substituteFloatFieldsStartingWithSome);
-		ruleMapping.add(substituteDoubleFieldsStartingWithSome);
-		ruleMapping.add(substituteShortFieldsStartingWithSome);
-		
-		// set this mapping object in the BeanPropertyGenerator
-		beanPropertyGenerator.getProperties().setRuleMapping(ruleMapping);
+		ruleBuilder.forType(Integer.class).when(new FieldNameStartsWithCondition("some")).thenReturn(5);
+		ruleBuilder.forType(Float.class).when(new FieldNameStartsWithCondition("some")).thenReturn(3.14f);
+		ruleBuilder.forType(Double.class).when(new FieldNameStartsWithCondition("some")).thenReturn(7.4562);
+		ruleBuilder.forType(Short.class).when(new FieldNameStartsWithCondition("some")).thenReturn((short) 9);
 	}
 	
 	@Test
@@ -68,10 +58,10 @@ public class RulesForPrimitivesTest
 		TestBean testBean = beanPropertyGenerator.get(TestBean.class);
 		AnotherTestBean anotherTestBean = testBean.getAnotherTestBean();
 		
-		//make sure that the string did not change
+		// make sure that the string did not change
 		assertSame("someID", anotherTestBean.getSomeID());
 		
-		//verify the primitive values were properly set
+		// verify the primitive values were properly set
 		assertEquals(5, anotherTestBean.getSomeNumber());
 		assertEquals(3.14f, anotherTestBean.getSomeFloat(), 0f);
 		assertEquals(7.4562, anotherTestBean.getSomeDouble(), 0f);

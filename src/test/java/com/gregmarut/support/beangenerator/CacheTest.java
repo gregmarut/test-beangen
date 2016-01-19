@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import com.gregmarut.support.bean.AnotherTestBean;
 import com.gregmarut.support.bean.TestBean;
+import com.gregmarut.support.beangenerator.config.CacheOverrideType;
 
 /**
  * This test demonstrates that the cache is working correctly
@@ -82,5 +83,33 @@ public class CacheTest
 		// these two beans should be different references
 		Assert.assertNotSame(testBean1.getAnotherTestBean(), testBean2.getAnotherTestBean());
 		Assert.assertFalse(testBean1.getAnotherTestBean() == testBean2.getAnotherTestBean());
+	}
+	
+	@Test
+	public void overrideCacheTest()
+	{
+		// create a new BeanPropertyGenerator
+		BeanPropertyGenerator beanPropertyGenerator = new BeanPropertyGenerator(false);
+		beanPropertyGenerator.getConfiguration().getCacheOverride().put(TestBean.class, CacheOverrideType.CACHE);
+		
+		// create a new test object
+		TestBean testBean1 = beanPropertyGenerator.get(TestBean.class);
+		TestBean testBean2 = beanPropertyGenerator.get(TestBean.class);
+		
+		// create another object
+		AnotherTestBean anotherTestBean = beanPropertyGenerator.get(AnotherTestBean.class);
+		
+		// these two beans should be exactly equal (even object references)
+		Assert.assertEquals(testBean1, testBean2);
+		Assert.assertTrue(testBean1 == testBean2);
+		
+		// these two beans should be different references
+		Assert.assertNotSame(anotherTestBean, testBean1.getAnotherTestBean());
+		Assert.assertFalse(anotherTestBean == testBean1.getAnotherTestBean());
+		
+		// these two beans should be exactly equal (even object references) because they are part of a cached parent
+		// object TestBean
+		Assert.assertEquals(testBean1.getAnotherTestBean(), testBean2.getAnotherTestBean());
+		Assert.assertTrue(testBean1.getAnotherTestBean() == testBean2.getAnotherTestBean());
 	}
 }

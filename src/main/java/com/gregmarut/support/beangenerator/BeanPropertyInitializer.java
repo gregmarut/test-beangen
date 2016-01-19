@@ -12,8 +12,11 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 
@@ -22,23 +25,26 @@ import org.slf4j.LoggerFactory;
 
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
+import com.gregmarut.support.beangenerator.config.Configuration;
+import com.gregmarut.support.beangenerator.config.InterfaceMapper;
 import com.gregmarut.support.beangenerator.proxy.GeneratorInterfaceProxy;
 import com.gregmarut.support.beangenerator.rule.Rule;
+import com.gregmarut.support.util.ClassConversionUtil;
+import com.gregmarut.support.util.ReflectionUtil;
 
 /**
- * This class is responsible for the actual initialization of a bean object. It uses reflection to
- * cascade an object and
- * populate its fields
+ * This class is responsible for the actual initialization of a bean object. It uses reflection to cascade an object
+ * looking for all declared fields and creates a new instance of that class.
  * 
  * @author Greg Marut
  */
-public abstract class BeanPropertyInitializer
+public class BeanPropertyInitializer
 {
 	// ** Objects **//
 	// instantiate the logger
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected Properties properties;
+	protected Configuration configuration;
 	
 	// holds the cache for this BeanPropertyGenerator
 	protected final Cache cache;
@@ -50,25 +56,24 @@ public abstract class BeanPropertyInitializer
 	/**
 	 * Constructs a new BeanPropertyInitializer
 	 * 
-	 * @param properties
+	 * @param configuration
 	 */
-	BeanPropertyInitializer(final Properties properties, final Cache cache)
+	BeanPropertyInitializer(final Configuration configuration, final Cache cache)
 	{
-		// make sure the properties are not null
-		if (null == properties)
+		// make sure the configuration are not null
+		if (null == configuration)
 		{
-			throw new IllegalArgumentException("properties cannot be null");
+			throw new IllegalArgumentException("configuration cannot be null");
 		}
 		
-		setProperties(properties);
+		setConfiguration(configuration);
 		
 		this.instantiationStack = new ArrayDeque<Class<?>>();
 		this.cache = cache;
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are
-	 * also instantiated.
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated.
 	 * 
 	 * @param clazz
 	 * @return Object
@@ -81,8 +86,7 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are
-	 * also instantiated
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated
 	 * provided the populate boolean is set to true.
 	 * 
 	 * @param clazz
@@ -92,7 +96,7 @@ public abstract class BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	final <T> T initialize(final Class<T> clazz, final boolean populate) throws InstantiationException,
-		IllegalAccessException
+			IllegalAccessException
 	{
 		logger.debug("Initializing {}", clazz.getName());
 		
@@ -107,9 +111,9 @@ public abstract class BeanPropertyInitializer
 			object = instantiate(clazz);
 			
 			// check to see if caching is enabled
-			if (properties.isCache())
+			if (configuration.isCache())
 			{
-				logger.debug("Adding " + clazz.getName() + " to the cache");
+				logger.debug("Adding {} to the cache", clazz.getName());
 				
 				// add this object to the model map
 				cache.put(clazz, object);
@@ -118,7 +122,7 @@ public abstract class BeanPropertyInitializer
 			// make sure the new object is not null
 			// a new object can only be null if it was specifically defined as
 			// null in the
-			// properties.getDefaultValues()
+			// configuration.getDefaultValues()
 			if (null != object && !Proxy.isProxyClass(object.getClass()))
 			{
 				// push this class onto the stack
@@ -137,8 +141,8 @@ public abstract class BeanPropertyInitializer
 		else
 		{
 			// an infinite loop was detected
-			logger.info("Cyclical dependency detected while attempting to initialize " + clazz.getName()
-				+ ". Skipping object population.");
+			logger.info("Cyclical dependency detected while attempting to initialize {}. Skipping object population.",
+					clazz.getName());
 			object = null;
 		}
 		
@@ -157,10 +161,10 @@ public abstract class BeanPropertyInitializer
 		// make sure the new object is not null
 		// a new object can only be null if it was specifically defined as null
 		// in the
-		// properties.getDefaultValues()
+		// configuration.getDefaultValues()
 		if (null != object)
 		{
-			logger.debug("Initializing " + object.getClass().getName());
+			logger.debug("Initializing {}", object.getClass().getName());
 			
 			// push this class onto the stack
 			instantiationStack.push(object.getClass());
@@ -176,11 +180,8 @@ public abstract class BeanPropertyInitializer
 		return object;
 	}
 	
-	protected abstract void populate(final Object object);
-	
 	/**
-	 * Instantiates a new instance of the class. If the class is an interface, this method will
-	 * attempt to lookup the
+	 * Instantiates a new instance of the class. If the class is an interface, this method will attempt to lookup the
 	 * corresponding concrete class in the {@link InterfaceMapper}.
 	 * 
 	 * @param clazz
@@ -199,11 +200,11 @@ public abstract class BeanPropertyInitializer
 		{
 			// attempt to map the interface to a concrete class to instantiate
 			// instead
-			Class<T> concreteClass = (Class<T>) properties.getInterfaceMapper().get(clazz);
+			Class<T> concreteClass = (Class<T>) configuration.getInterfaceMapper().get(clazz);
 			
 			if (null != concreteClass)
 			{
-				logger.debug(concreteClass.getName() + " found to replace interface " + clazz.getName());
+				logger.debug("{} found to replace interface {}", concreteClass.getName(), clazz.getName());
 				
 				// instantiate a new instance of the concrete class
 				newObject = initialize(concreteClass);
@@ -212,15 +213,15 @@ public abstract class BeanPropertyInitializer
 			{
 				// check to see if proxies should be generator for unmapped
 				// interfaces
-				if (properties.getProxyUnmappedInterfaces())
+				if (configuration.getProxyUnmappedInterfaces())
 				{
 					// create a new proxy for this interface
-					newObject = GeneratorInterfaceProxy.createProxy(properties, clazz);
+					newObject = GeneratorInterfaceProxy.createProxy(configuration, clazz);
 				}
 				else
 				{
 					throw new InstantiationException("Interface " + clazz.getName()
-						+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
+							+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
 				}
 			}
 		}
@@ -244,12 +245,12 @@ public abstract class BeanPropertyInitializer
 		else
 		{
 			// check to see if this value exists in the default values map
-			if (properties.getDefaultValues().containsKey(clazz))
+			if (configuration.getDefaultValues().containsKey(clazz))
 			{
-				logger.debug("Found default value for " + clazz.getName());
+				logger.debug("Found default value for {}", clazz.getName());
 				
 				// retrieve the default value
-				newObject = properties.getDefaultValues().get(clazz).getValue();
+				newObject = (T) configuration.getDefaultValues().get(clazz).getValue();
 			}
 			else
 			{
@@ -271,46 +272,279 @@ public abstract class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link properties.getRuleMapping()} to determine if there are any {@link Rule}
-	 * that match this
-	 * specific setter method. If a match is found, the {@link Rule} is returned.
+	 * Fully populates an object and traverses the all of the fields recursively
 	 * 
-	 * @param name
+	 * @param object
+	 */
+	protected final void populate(final Object object)
+	{
+		// retrieve a list of all of the methods defined in this class
+		Field[] fields = ReflectionUtil.getAllFields(object);
+		
+		// set the data on the object
+		setData(object, fields);
+	}
+	
+	/**
+	 * Sets the data on the object
+	 * 
+	 * @param obj
+	 * @param setterMethods
+	 */
+	protected final void setData(final Object obj, final Field[] fields)
+	{
+		// for each of the fields in the list
+		for (Field field : fields)
+		{
+			// make sure this field is not transient and its not final
+			if (!Modifier.isTransient(field.getModifiers()) && !Modifier.isFinal(field.getModifiers()))
+			{
+				// get the type of this field
+				Class<?> clazz = field.getType();
+				
+				try
+				{
+					// holds the value to set for this field
+					Object value;
+					
+					// attempt to see if a rule generated value exists for this parameter type and
+					// setter method
+					Rule<?> rule = checkForMatchingRule(field, clazz);
+					
+					// check to see if a value was found based on the rules
+					if (null == rule)
+					{
+						// holds the value to set in the setter method
+						value = getValue(clazz, field);
+					}
+					else
+					{
+						logger.debug("Rule found for \"{}\":{}", field.getName(), clazz.getName());
+						
+						// set the value to the value defined in the rule
+						value = rule.getValue().getValue(field);
+					}
+					
+					// set the value on the object
+					field.setAccessible(true);
+					field.set(obj, value);
+				}
+				catch (InstantiationException e)
+				{
+					// This condition typically occurs with data types that aren't currently
+					// supported.
+					// Info log level is used here rather than Error or Warn because there are cases
+					// where we don't mind if some fields are not initialized.
+					// One type that we've seen is JAXBElement, which can't
+					// be set to generated values without more info (such as namespace).
+					// However, some other fields in the object that are not of type JAXBElement
+					// will get set, and depending on the test case, this may be fine.
+					logger.info("Could not intialize property named: {} of type: {} in object of type: {}",
+							field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
+				}
+				catch (IllegalArgumentException e)
+				{
+					logger.error(e.getMessage(), e);
+				}
+				catch (IllegalAccessException e)
+				{
+					logger.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Converts a parameter type to a value to be set onto the method.
+	 * 
+	 * @param clazz
+	 * @return
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	protected final Object getValue(final Class<?> clazz) throws InstantiationException, IllegalAccessException
+	{
+		return getValue(clazz, null);
+	}
+	
+	/**
+	 * Converts a parameter type to a value to be set onto the method.
+	 * 
+	 * @param clazz
+	 * @param field
+	 * @return
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	protected final Object getValue(final Class<?> clazz, final Field field) throws InstantiationException,
+			IllegalAccessException
+	{
+		// holds the value of the object to return
+		final Object obj;
+		
+		// make sure the parameter is not null
+		if (null != clazz)
+		{
+			// check to see if this parameter is a type of collection
+			if (Collection.class.isAssignableFrom(clazz))
+			{
+				// instantiate a new collection object
+				@SuppressWarnings("unchecked")
+				Collection<Object> collection = (Collection<Object>) instantiate(clazz);
+				
+				// populate the collection
+				populateCollection(collection, field);
+				
+				// assign the collection as the object to set into the method
+				obj = collection;
+			}
+			else
+			{
+				// check to see if this value exists in the default values map
+				if (configuration.getDefaultValues().containsKey(clazz))
+				{
+					// make sure the field is not null
+					if (null != field)
+					{
+						logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
+						
+						// retrieve the default value
+						obj = configuration.getDefaultValues().get(clazz).getValue(field);
+					}
+					else
+					{
+						// retrieve the default value
+						obj = configuration.getDefaultValues().get(clazz).getValue();
+					}
+				}
+				else
+				{
+					// create the object that instructs how to retrieve the object
+					Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
+					
+					// check to see if caching is enabled
+					if (configuration.useCache(clazz))
+					{
+						obj = cache.getOrRetieve(clazz, retrieve);
+					}
+					else
+					{
+						obj = retrieve.retrieve();
+					}
+				}
+			}
+		}
+		else
+		{
+			obj = null;
+		}
+		
+		return obj;
+	}
+	
+	/**
+	 * Searches all of the fields of a class and attempts to pick out the fields that return a collection. For each
+	 * collection found, this method populates it with test data
+	 * 
+	 * @param fields
+	 */
+	protected final void populateCollection(final Collection<Object> collection, final Field field)
+	{
+		try
+		{
+			// make sure the collection is not null and that it is not a proxy
+			if (null != collection && !Proxy.isProxyClass(collection.getClass()))
+			{
+				// extract the generic classes for this field
+				List<Class<?>> genericClasses = ReflectionUtil.extractGenericClasses(field);
+				
+				// make sure the generic class was found
+				if (!genericClasses.isEmpty())
+				{
+					// populate this collection
+					populateCollection(collection, genericClasses.get(0));
+				}
+				else
+				{
+					logger.debug(
+							"Could not populate the collection of {} because the generic class type could not be determined.",
+							field.getName());
+				}
+			}
+		}
+		catch (InstantiationException e)
+		{
+			logger.error(e.getMessage(), e);
+		}
+		catch (IllegalAccessException e)
+		{
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Populates a collection of objects with the given class type
+	 * 
+	 * @param collection
+	 * @param clazz
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	protected final void populateCollection(final Collection<Object> collection, Class<?> clazz)
+			throws InstantiationException, IllegalAccessException
+	{
+		logger.debug("Populating {} with objects of type {}", collection.getClass().getName(), clazz.getName());
+		
+		// for the specific number of times to auto fill lists
+		for (int i = 0; i < configuration.getCollectionAutoFillCount(); i++)
+		{
+			// get the value for this class type
+			Object object = getValue(clazz);
+			
+			// make sure the object is not null
+			if (null != object)
+			{
+				// add the object to the collection
+				collection.add(object);
+			}
+		}
+	}
+	
+	/**
+	 * Checks the {@link configuration.getRuleMapping()} to determine if there are any {@link Rule} that match this
+	 * specific field name. If a match is found, the {@link Rule} is returned.
+	 * 
+	 * @param field
 	 * @param clazz
 	 * @return Rule
 	 */
-	protected Rule<?> checkForMatchingRule(final String name, final Class<?> clazz)
+	protected final Rule<?> checkForMatchingRule(final Field field, final Class<?> clazz)
 	{
 		// holds the value to return
 		Rule<?> rule = null;
 		
 		// make sure the rule mapping object is not null
-		if (null != properties.getRuleMapping())
+		if (null != configuration.getRuleMapping())
 		{
-			// convert the class from its primitive value if applicable,
-			// otherwise use the original
-			// value
-			// The reason that primitives have to be cast up is because Generics
-			// does not support
-			// primitives.
+			/*
+			 * convert the class from its primitive value if applicable, otherwise use the original value The reason
+			 * that primitives have to be cast up is because Generics does not support primitives.
+			 */
 			Class<?> nonPrimitiveClass = ClassConversionUtil.convertToNonPrimitive(clazz);
 			
 			// check to see if the rule mapping contains rules for this
 			// parameter type
-			if (properties.getRuleMapping().contains(nonPrimitiveClass))
+			if (configuration.getRuleMapping().contains(nonPrimitiveClass))
 			{
 				// get the list of rules from the rule mapping based on this
 				// parameter type
-				List<Rule<?>> rules = properties.getRuleMapping().get(nonPrimitiveClass);
+				Deque<Rule<?>> rules = configuration.getRuleMapping().get(nonPrimitiveClass);
 				
 				// for every rule in the list or until a rule is found
-				for (int i = 0; i < rules.size() && null == rule; i++)
+				for (Rule<?> currentRule : rules)
 				{
-					// get the current field matching rule
-					Rule<?> currentRule = rules.get(i);
-					
 					// check to see if this rule is a match
-					if (currentRule.isMatch(nonPrimitiveClass, name))
+					if (currentRule.isTrue(field))
 					{
 						rule = currentRule;
 					}
@@ -321,19 +555,29 @@ public abstract class BeanPropertyInitializer
 		return rule;
 	}
 	
-	public final void setProperties(final Properties properties)
+	/**
+	 * Sets the configuration
+	 * 
+	 * @param configuration
+	 */
+	public final void setConfiguration(final Configuration configuration)
 	{
-		if (null == properties)
+		if (null == configuration)
 		{
-			throw new IllegalArgumentException("properties cannot be null.");
+			throw new IllegalArgumentException("configuration cannot be null.");
 		}
 		
-		this.properties = properties;
+		this.configuration = configuration;
 	}
 	
-	public final Properties getProperties()
+	/**
+	 * Retrieves the configuration
+	 * 
+	 * @return
+	 */
+	public final Configuration getConfiguration()
 	{
-		return properties;
+		return configuration;
 	}
 	
 	/**

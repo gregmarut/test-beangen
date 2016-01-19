@@ -10,7 +10,7 @@
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
-package com.gregmarut.support.proxy;
+package com.gregmarut.support.beantest.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

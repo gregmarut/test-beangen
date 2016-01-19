@@ -14,6 +14,8 @@ package com.gregmarut.support.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -95,5 +97,36 @@ public class ReflectionUtil
 		sb.append("()");
 		
 		throw new NoSuchMethodException(sb.toString());
+	}
+	
+	/**
+	 * Extracts the list of generic classes from a field if they are defined
+	 * 
+	 * @param field
+	 * @return
+	 */
+	public static List<Class<?>> extractGenericClasses(final Field field)
+	{
+		// hold the list of generic classes for the object defined in this field
+		List<Class<?>> generics = new ArrayList<Class<?>>();
+		
+		// get the generic type for this collection
+		Type genericType = field.getGenericType();
+		
+		// make sure there is a generic type assigned for this collection
+		if (genericType instanceof ParameterizedType)
+		{
+			// attempt to extract the generic from this collection
+			ParameterizedType parameterizedTypes = (ParameterizedType) genericType;
+			
+			// for each of the actual type arguments
+			for (Type type : parameterizedTypes.getActualTypeArguments())
+			{
+				final Class<?> clazz = (Class<?>) type;
+				generics.add(clazz);
+			}
+		}
+		
+		return generics;
 	}
 }
