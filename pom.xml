@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gregmarut.support</groupId>
 	<artifactId>test-beangen</artifactId>
-	<version>2.5-SNAPSHOT</version>
+	<version>2.5-RELEASE</version>
 	<name>Bean Property Generator</name>
 	<description>Supports unit testing by dynamically creating bean objects and populating their fields to default values.</description>
 	<url>https://github.com/gregmarut/test-beangen/</url>
