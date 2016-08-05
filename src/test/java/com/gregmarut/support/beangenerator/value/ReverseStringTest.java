@@ -14,13 +14,14 @@ package com.gregmarut.support.beangenerator.value;
 
 import static org.junit.Assert.assertEquals;
 
-import java.lang.reflect.Field;
+import java.util.Deque;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.gregmarut.support.bean.TestBean;
 import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
+import com.gregmarut.support.beangenerator.model.FieldMember;
 
 public class ReverseStringTest
 {
@@ -38,9 +39,9 @@ public class ReverseStringTest
 		beanPropertyGenerator.getConfiguration().getDefaultValues().put(String.class, new StringValue()
 		{
 			@Override
-			public String getValue(Field field, Object declaringObject)
+			public String getValue(final Deque<FieldMember> fieldMemberStack)
 			{
-				return new StringBuilder(super.getValue(field, declaringObject)).reverse().toString();
+				return new StringBuilder(super.getValue(fieldMemberStack)).reverse().toString();
 			}
 		});
 	}

@@ -12,7 +12,9 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.value;
 
-import java.lang.reflect.Field;
+import java.util.Deque;
+
+import com.gregmarut.support.beangenerator.model.FieldMember;
 
 /**
  * Represents a null value
@@ -42,7 +44,7 @@ public class NullValue<V> implements Value<V>
 	}
 	
 	@Override
-	public V getValue(final Field field, final Object declaringObject)
+	public V getValue(Deque<FieldMember> fieldMemberStack)
 	{
 		return null;
 	}

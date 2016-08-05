@@ -27,6 +27,7 @@ import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
 import com.gregmarut.support.beangenerator.config.Configuration;
 import com.gregmarut.support.beangenerator.config.InterfaceMapper;
+import com.gregmarut.support.beangenerator.model.FieldMember;
 import com.gregmarut.support.beangenerator.proxy.GeneratorInterfaceProxy;
 import com.gregmarut.support.beangenerator.rule.Rule;
 import com.gregmarut.support.util.ClassConversionUtil;
@@ -82,9 +83,10 @@ public class BeanPropertyInitializer
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	final <T> T initialize(final Class<T> clazz) throws InstantiationException, IllegalAccessException
+	final <T> T initialize(final Class<T> clazz, final Deque<FieldMember> fieldMemberStack)
+		throws InstantiationException, IllegalAccessException
 	{
-		return initialize(clazz, true);
+		return initialize(clazz, true, fieldMemberStack);
 	}
 	
 	/**
@@ -98,8 +100,8 @@ public class BeanPropertyInitializer
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	final <T> T initialize(final Class<T> clazz, final boolean populate) throws InstantiationException,
-		IllegalAccessException
+	final <T> T initialize(final Class<T> clazz, final boolean populate, final Deque<FieldMember> fieldMemberStack)
+		throws InstantiationException, IllegalAccessException
 	{
 		logger.debug("Initializing {}", clazz.getName());
 		
@@ -111,7 +113,7 @@ public class BeanPropertyInitializer
 		if (!instantiationStack.contains(clazz))
 		{
 			// instantiate a new version of this method
-			object = instantiate(clazz);
+			object = instantiate(clazz, fieldMemberStack);
 			
 			// check to see if caching is enabled
 			if (configuration.isCache())
@@ -134,7 +136,7 @@ public class BeanPropertyInitializer
 				if (populate)
 				{
 					// populate the object via methods
-					populate(object);
+					populate(object, fieldMemberStack);
 				}
 				
 				// remove this class from the stack
@@ -159,7 +161,7 @@ public class BeanPropertyInitializer
 	 * @param object
 	 * @return Object
 	 */
-	final Object initialize(final Object object)
+	final Object initialize(final Object object, final Deque<FieldMember> fieldMemberStack)
 	{
 		// make sure the new object is not null
 		// a new object can only be null if it was specifically defined as null
@@ -173,7 +175,7 @@ public class BeanPropertyInitializer
 			instantiationStack.push(object.getClass());
 			
 			// populate the object via methods
-			populate(object);
+			populate(object, fieldMemberStack);
 			
 			// remove this class from the stack
 			instantiationStack.pop();
@@ -194,7 +196,8 @@ public class BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	@SuppressWarnings("unchecked")
-	protected final <T> T instantiate(final Class<T> clazz) throws InstantiationException, IllegalAccessException
+	protected final <T> T instantiate(final Class<T> clazz, final Deque<FieldMember> fieldMemberStack)
+		throws InstantiationException, IllegalAccessException
 	{
 		// holds the object to return
 		T newObject;
@@ -211,7 +214,7 @@ public class BeanPropertyInitializer
 				logger.debug("{} found to replace interface {}", concreteClass.getName(), clazz.getName());
 				
 				// instantiate a new instance of the concrete class
-				newObject = initialize(concreteClass);
+				newObject = initialize(concreteClass, fieldMemberStack);
 			}
 			else
 			{
@@ -280,13 +283,13 @@ public class BeanPropertyInitializer
 	 * 
 	 * @param object
 	 */
-	protected final void populate(final Object object)
+	protected final void populate(final Object object, final Deque<FieldMember> fieldMemberStack)
 	{
 		// retrieve a list of all of the methods defined in this class
 		Field[] fields = ReflectionUtil.getAllFields(object);
 		
 		// set the data on the object
-		setData(object, fields);
+		setData(object, fields, fieldMemberStack);
 	}
 	
 	/**
@@ -295,7 +298,7 @@ public class BeanPropertyInitializer
 	 * @param obj
 	 * @param setterMethods
 	 */
-	protected final void setData(final Object obj, final Field[] fields)
+	protected final void setData(final Object obj, final Field[] fields, final Deque<FieldMember> fieldMemberStack)
 	{
 		// for each of the fields in the list
 		for (Field field : fields)
@@ -305,6 +308,10 @@ public class BeanPropertyInitializer
 			{
 				// get the type of this field
 				Class<?> clazz = field.getType();
+				
+				// create a new field member object and push it onto the stack
+				FieldMember fieldMember = new FieldMember(field, obj);
+				fieldMemberStack.push(fieldMember);
 				
 				try
 				{
@@ -319,14 +326,14 @@ public class BeanPropertyInitializer
 					if (null == rule)
 					{
 						// holds the value to set in the setter method
-						value = getValue(clazz, field, obj);
+						value = getValue(clazz, field, obj, fieldMemberStack);
 					}
 					else
 					{
 						logger.debug("Rule found for \"{}\":{}", field.getName(), clazz.getName());
 						
 						// set the value to the value defined in the rule
-						value = rule.getValue().getValue(field, obj);
+						value = rule.getValue().getValue(new ArrayDeque<FieldMember>(fieldMemberStack));
 					}
 					
 					// set the value on the object
@@ -354,6 +361,9 @@ public class BeanPropertyInitializer
 				{
 					logger.error(e.getMessage(), e);
 				}
+				
+				// pop the field member off the stack
+				fieldMemberStack.pop();
 			}
 		}
 	}
@@ -366,9 +376,10 @@ public class BeanPropertyInitializer
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	protected final Object getValue(final Class<?> clazz) throws InstantiationException, IllegalAccessException
+	protected final Object getValue(final Class<?> clazz, final Deque<FieldMember> fieldMemberStack)
+		throws InstantiationException, IllegalAccessException
 	{
-		return getValue(clazz, null, null);
+		return getValue(clazz, null, null, fieldMemberStack);
 	}
 	
 	/**
@@ -380,7 +391,8 @@ public class BeanPropertyInitializer
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	protected final Object getValue(final Class<?> clazz, final Field field, final Object declaringObject)
+	protected final Object getValue(final Class<?> clazz, final Field field, final Object declaringObject,
+		final Deque<FieldMember> fieldMemberStack)
 		throws InstantiationException, IllegalAccessException
 	{
 		// holds the value of the object to return
@@ -394,10 +406,10 @@ public class BeanPropertyInitializer
 			{
 				// instantiate a new collection object
 				@SuppressWarnings("unchecked")
-				Collection<Object> collection = (Collection<Object>) instantiate(clazz);
+				Collection<Object> collection = (Collection<Object>) instantiate(clazz, fieldMemberStack);
 				
 				// populate the collection
-				populateCollection(collection, field);
+				populateCollection(collection, field, fieldMemberStack);
 				
 				// assign the collection as the object to set into the method
 				obj = collection;
@@ -413,7 +425,8 @@ public class BeanPropertyInitializer
 						logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
 						
 						// retrieve the default value
-						obj = configuration.getDefaultValues().get(clazz).getValue(field, declaringObject);
+						obj = configuration.getDefaultValues().get(clazz)
+							.getValue(new ArrayDeque<FieldMember>(fieldMemberStack));
 					}
 					else
 					{
@@ -424,7 +437,7 @@ public class BeanPropertyInitializer
 				else
 				{
 					// create the object that instructs how to retrieve the object
-					Retrieve<Object> retrieve = new RetrieveByInitialize(clazz);
+					Retrieve<Object> retrieve = new RetrieveByInitialize(clazz, fieldMemberStack);
 					
 					// check to see if caching is enabled
 					if (configuration.useCache(clazz))
@@ -453,7 +466,8 @@ public class BeanPropertyInitializer
 	 * 
 	 * @param fields
 	 */
-	protected final void populateCollection(final Collection<Object> collection, final Field field)
+	protected final void populateCollection(final Collection<Object> collection, final Field field,
+		final Deque<FieldMember> fieldMemberStack)
 	{
 		try
 		{
@@ -467,7 +481,7 @@ public class BeanPropertyInitializer
 				if (!genericClasses.isEmpty())
 				{
 					// populate this collection
-					populateCollection(collection, genericClasses.get(0));
+					populateCollection(collection, genericClasses.get(0), fieldMemberStack);
 				}
 				else
 				{
@@ -495,7 +509,8 @@ public class BeanPropertyInitializer
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	protected final void populateCollection(final Collection<Object> collection, Class<?> clazz)
+	protected final void populateCollection(final Collection<Object> collection, Class<?> clazz,
+		final Deque<FieldMember> fieldMemberStack)
 		throws InstantiationException, IllegalAccessException
 	{
 		logger.debug("Populating {} with objects of type {}", collection.getClass().getName(), clazz.getName());
@@ -504,7 +519,7 @@ public class BeanPropertyInitializer
 		for (int i = 0; i < configuration.getCollectionAutoFillCount(); i++)
 		{
 			// get the value for this class type
-			Object object = getValue(clazz);
+			Object object = getValue(clazz, fieldMemberStack);
 			
 			// make sure the object is not null
 			if (null != object)
@@ -597,10 +612,12 @@ public class BeanPropertyInitializer
 	protected class RetrieveByInitialize implements Retrieve<Object>
 	{
 		private Class<?> clazz;
+		private final Deque<FieldMember> fieldMemberStack;
 		
-		public RetrieveByInitialize(final Class<?> clazz)
+		public RetrieveByInitialize(final Class<?> clazz, final Deque<FieldMember> fieldMemberStack)
 		{
 			this.clazz = clazz;
+			this.fieldMemberStack = fieldMemberStack;
 		}
 		
 		@Override
@@ -608,7 +625,7 @@ public class BeanPropertyInitializer
 		{
 			try
 			{
-				return initialize(clazz);
+				return initialize(clazz, fieldMemberStack);
 			}
 			catch (InstantiationException e)
 			{
