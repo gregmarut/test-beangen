@@ -20,8 +20,10 @@ public interface Condition
 	 * Determines if this condition results to true
 	 * 
 	 * @param field
-	 *            The field of the attribute
+	 *        The field of the attribute
+	 * @param the
+	 *        object that is declaring this field
 	 * @return
 	 */
-	boolean isTrue(final Field field);
+	boolean isTrue(final Field field, final Object declaringObject);
 }

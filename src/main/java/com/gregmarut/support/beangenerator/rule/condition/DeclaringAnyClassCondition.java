@@ -14,24 +14,24 @@ package com.gregmarut.support.beangenerator.rule.condition;
 
 import java.lang.reflect.Field;
 
-public class FieldNameEndsWithCondition extends FieldNameCondition
+/**
+ * A condition for checking if a field is a member of a specific class or any parent class in the
+ * hierarchy
+ * 
+ * @author Greg Marut
+ */
+public class DeclaringAnyClassCondition implements Condition
 {
-	public FieldNameEndsWithCondition(final String pattern)
+	private final Class<?> declaringClass;
+	
+	public DeclaringAnyClassCondition(final Class<?> declaringClass)
 	{
-		super(pattern);
+		this.declaringClass = declaringClass;
 	}
 	
 	@Override
 	public boolean isTrue(final Field field, final Object declaringObject)
 	{
-		// make sure the name is not null
-		if (null != field.getName())
-		{
-			return field.getName().endsWith(pattern);
-		}
-		else
-		{
-			return false;
-		}
+		return declaringObject.getClass().equals(declaringClass);
 	}
 }

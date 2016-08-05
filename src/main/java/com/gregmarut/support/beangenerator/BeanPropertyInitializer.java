@@ -33,7 +33,8 @@ import com.gregmarut.support.util.ClassConversionUtil;
 import com.gregmarut.support.util.ReflectionUtil;
 
 /**
- * This class is responsible for the actual initialization of a bean object. It uses reflection to cascade an object
+ * This class is responsible for the actual initialization of a bean object. It uses reflection to
+ * cascade an object
  * looking for all declared fields and creates a new instance of that class.
  * 
  * @author Greg Marut
@@ -73,7 +74,8 @@ public class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated.
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are
+	 * also instantiated.
 	 * 
 	 * @param clazz
 	 * @return Object
@@ -86,7 +88,8 @@ public class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Initializes a class and returns a new instantiated object. All fields in the new object are also instantiated
+	 * Initializes a class and returns a new instantiated object. All fields in the new object are
+	 * also instantiated
 	 * provided the populate boolean is set to true.
 	 * 
 	 * @param clazz
@@ -96,7 +99,7 @@ public class BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	final <T> T initialize(final Class<T> clazz, final boolean populate) throws InstantiationException,
-			IllegalAccessException
+		IllegalAccessException
 	{
 		logger.debug("Initializing {}", clazz.getName());
 		
@@ -142,7 +145,7 @@ public class BeanPropertyInitializer
 		{
 			// an infinite loop was detected
 			logger.info("Cyclical dependency detected while attempting to initialize {}. Skipping object population.",
-					clazz.getName());
+				clazz.getName());
 			object = null;
 		}
 		
@@ -181,7 +184,8 @@ public class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Instantiates a new instance of the class. If the class is an interface, this method will attempt to lookup the
+	 * Instantiates a new instance of the class. If the class is an interface, this method will
+	 * attempt to lookup the
 	 * corresponding concrete class in the {@link InterfaceMapper}.
 	 * 
 	 * @param clazz
@@ -221,7 +225,7 @@ public class BeanPropertyInitializer
 				else
 				{
 					throw new InstantiationException("Interface " + clazz.getName()
-							+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
+						+ " does not have mapped concrete class in " + InterfaceMapper.class.getName());
 				}
 			}
 		}
@@ -309,7 +313,7 @@ public class BeanPropertyInitializer
 					
 					// attempt to see if a rule generated value exists for this parameter type and
 					// setter method
-					Rule<?> rule = checkForMatchingRule(field, clazz);
+					Rule<?> rule = checkForMatchingRule(obj, field, clazz);
 					
 					// check to see if a value was found based on the rules
 					if (null == rule)
@@ -340,7 +344,7 @@ public class BeanPropertyInitializer
 					// However, some other fields in the object that are not of type JAXBElement
 					// will get set, and depending on the test case, this may be fine.
 					logger.info("Could not intialize property named: {} of type: {} in object of type: {}",
-							field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
+						field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
 				}
 				catch (IllegalArgumentException e)
 				{
@@ -377,7 +381,7 @@ public class BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	protected final Object getValue(final Class<?> clazz, final Field field) throws InstantiationException,
-			IllegalAccessException
+		IllegalAccessException
 	{
 		// holds the value of the object to return
 		final Object obj;
@@ -443,7 +447,8 @@ public class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Searches all of the fields of a class and attempts to pick out the fields that return a collection. For each
+	 * Searches all of the fields of a class and attempts to pick out the fields that return a
+	 * collection. For each
 	 * collection found, this method populates it with test data
 	 * 
 	 * @param fields
@@ -467,8 +472,8 @@ public class BeanPropertyInitializer
 				else
 				{
 					logger.debug(
-							"Could not populate the collection of {} because the generic class type could not be determined.",
-							field.getName());
+						"Could not populate the collection of {} because the generic class type could not be determined.",
+						field.getName());
 				}
 			}
 		}
@@ -491,7 +496,7 @@ public class BeanPropertyInitializer
 	 * @throws IllegalAccessException
 	 */
 	protected final void populateCollection(final Collection<Object> collection, Class<?> clazz)
-			throws InstantiationException, IllegalAccessException
+		throws InstantiationException, IllegalAccessException
 	{
 		logger.debug("Populating {} with objects of type {}", collection.getClass().getName(), clazz.getName());
 		
@@ -511,14 +516,17 @@ public class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link configuration.getRuleMapping()} to determine if there are any {@link Rule} that match this
+	 * Checks the {@link configuration.getRuleMapping()} to determine if there are any {@link Rule}
+	 * that match this
 	 * specific field name. If a match is found, the {@link Rule} is returned.
 	 * 
+	 * @param declaringObject
+	 *        the object where the field is declared
 	 * @param field
 	 * @param clazz
 	 * @return Rule
 	 */
-	protected final Rule<?> checkForMatchingRule(final Field field, final Class<?> clazz)
+	protected final Rule<?> checkForMatchingRule(final Object declaringObject, final Field field, final Class<?> clazz)
 	{
 		// holds the value to return
 		Rule<?> rule = null;
@@ -527,7 +535,8 @@ public class BeanPropertyInitializer
 		if (null != configuration.getRuleMapping())
 		{
 			/*
-			 * convert the class from its primitive value if applicable, otherwise use the original value The reason
+			 * convert the class from its primitive value if applicable, otherwise use the original
+			 * value The reason
 			 * that primitives have to be cast up is because Generics does not support primitives.
 			 */
 			Class<?> nonPrimitiveClass = ClassConversionUtil.convertToNonPrimitive(clazz);
@@ -544,7 +553,7 @@ public class BeanPropertyInitializer
 				for (Rule<?> currentRule : rules)
 				{
 					// check to see if this rule is a match
-					if (currentRule.isTrue(field))
+					if (currentRule.isTrue(field, declaringObject))
 					{
 						rule = currentRule;
 					}
