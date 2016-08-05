@@ -41,8 +41,10 @@ public interface Value<T>
 	 * Returns the generated value
 	 * 
 	 * @param field
-	 * the field that this value represents
+	 *        the field that this value represents
+	 * @param declaringObject
+	 *        the object that is declaring this field
 	 * @return
 	 */
-	T getValue(Field field);
+	T getValue(Field field, Object declaringObject);
 }

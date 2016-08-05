@@ -38,9 +38,9 @@ public class ReverseStringTest
 		beanPropertyGenerator.getConfiguration().getDefaultValues().put(String.class, new StringValue()
 		{
 			@Override
-			public String getValue(Field field)
+			public String getValue(Field field, Object declaringObject)
 			{
-				return new StringBuilder(super.getValue(field)).reverse().toString();
+				return new StringBuilder(super.getValue(field, declaringObject)).reverse().toString();
 			}
 		});
 	}

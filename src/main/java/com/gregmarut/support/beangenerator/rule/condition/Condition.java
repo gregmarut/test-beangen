@@ -21,8 +21,8 @@ public interface Condition
 	 * 
 	 * @param field
 	 *        The field of the attribute
-	 * @param the
-	 *        object that is declaring this field
+	 * @param declaringObject
+	 *        the object that is declaring this field
 	 * @return
 	 */
 	boolean isTrue(final Field field, final Object declaringObject);

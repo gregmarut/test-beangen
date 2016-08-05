@@ -34,7 +34,7 @@ public class StringValue implements Value<String>
 	}
 	
 	@Override
-	public String getValue(final Field field)
+	public String getValue(final Field field, final Object declaringObject)
 	{
 		return field.getName();
 	}

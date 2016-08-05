@@ -42,7 +42,7 @@ public class NullValue<V> implements Value<V>
 	}
 	
 	@Override
-	public V getValue(final Field field)
+	public V getValue(final Field field, final Object declaringObject)
 	{
 		return null;
 	}

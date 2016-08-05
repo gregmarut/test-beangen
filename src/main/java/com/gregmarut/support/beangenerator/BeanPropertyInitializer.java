@@ -319,14 +319,14 @@ public class BeanPropertyInitializer
 					if (null == rule)
 					{
 						// holds the value to set in the setter method
-						value = getValue(clazz, field);
+						value = getValue(clazz, field, obj);
 					}
 					else
 					{
 						logger.debug("Rule found for \"{}\":{}", field.getName(), clazz.getName());
 						
 						// set the value to the value defined in the rule
-						value = rule.getValue().getValue(field);
+						value = rule.getValue().getValue(field, obj);
 					}
 					
 					// set the value on the object
@@ -368,7 +368,7 @@ public class BeanPropertyInitializer
 	 */
 	protected final Object getValue(final Class<?> clazz) throws InstantiationException, IllegalAccessException
 	{
-		return getValue(clazz, null);
+		return getValue(clazz, null, null);
 	}
 	
 	/**
@@ -380,8 +380,8 @@ public class BeanPropertyInitializer
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	protected final Object getValue(final Class<?> clazz, final Field field) throws InstantiationException,
-		IllegalAccessException
+	protected final Object getValue(final Class<?> clazz, final Field field, final Object declaringObject)
+		throws InstantiationException, IllegalAccessException
 	{
 		// holds the value of the object to return
 		final Object obj;
@@ -413,7 +413,7 @@ public class BeanPropertyInitializer
 						logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
 						
 						// retrieve the default value
-						obj = configuration.getDefaultValues().get(clazz).getValue(field);
+						obj = configuration.getDefaultValues().get(clazz).getValue(field, declaringObject);
 					}
 					else
 					{
