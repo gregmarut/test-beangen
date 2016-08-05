@@ -326,7 +326,7 @@ public class BeanPropertyInitializer
 					if (null == rule)
 					{
 						// holds the value to set in the setter method
-						value = getValue(clazz, field, obj, fieldMemberStack);
+						value = getValue(clazz, fieldMember, fieldMemberStack);
 					}
 					else
 					{
@@ -379,7 +379,7 @@ public class BeanPropertyInitializer
 	protected final Object getValue(final Class<?> clazz, final Deque<FieldMember> fieldMemberStack)
 		throws InstantiationException, IllegalAccessException
 	{
-		return getValue(clazz, null, null, fieldMemberStack);
+		return getValue(clazz, null, fieldMemberStack);
 	}
 	
 	/**
@@ -391,9 +391,8 @@ public class BeanPropertyInitializer
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	protected final Object getValue(final Class<?> clazz, final Field field, final Object declaringObject,
-		final Deque<FieldMember> fieldMemberStack)
-		throws InstantiationException, IllegalAccessException
+	protected final Object getValue(final Class<?> clazz, final FieldMember fieldMember,
+		final Deque<FieldMember> fieldMemberStack) throws InstantiationException, IllegalAccessException
 	{
 		// holds the value of the object to return
 		final Object obj;
@@ -409,7 +408,7 @@ public class BeanPropertyInitializer
 				Collection<Object> collection = (Collection<Object>) instantiate(clazz, fieldMemberStack);
 				
 				// populate the collection
-				populateCollection(collection, field, fieldMemberStack);
+				populateCollection(collection, fieldMember, fieldMemberStack);
 				
 				// assign the collection as the object to set into the method
 				obj = collection;
@@ -420,9 +419,10 @@ public class BeanPropertyInitializer
 				if (configuration.getDefaultValues().containsKey(clazz))
 				{
 					// make sure the field is not null
-					if (null != field)
+					if (null != fieldMember)
 					{
-						logger.debug("Found default value for \"{}\":{}", field.getName(), clazz.getName());
+						logger.debug("Found default value for \"{}\":{}", fieldMember.getField().getName(),
+							clazz.getName());
 						
 						// retrieve the default value
 						obj = configuration.getDefaultValues().get(clazz)
@@ -466,7 +466,7 @@ public class BeanPropertyInitializer
 	 * 
 	 * @param fields
 	 */
-	protected final void populateCollection(final Collection<Object> collection, final Field field,
+	protected final void populateCollection(final Collection<Object> collection, final FieldMember fieldMember,
 		final Deque<FieldMember> fieldMemberStack)
 	{
 		try
@@ -475,7 +475,7 @@ public class BeanPropertyInitializer
 			if (null != collection && !Proxy.isProxyClass(collection.getClass()))
 			{
 				// extract the generic classes for this field
-				List<Class<?>> genericClasses = ReflectionUtil.extractGenericClasses(field);
+				List<Class<?>> genericClasses = ReflectionUtil.extractGenericClasses(fieldMember.getField());
 				
 				// make sure the generic class was found
 				if (!genericClasses.isEmpty())
@@ -487,7 +487,7 @@ public class BeanPropertyInitializer
 				{
 					logger.debug(
 						"Could not populate the collection of {} because the generic class type could not be determined.",
-						field.getName());
+						fieldMember.getField().getName());
 				}
 			}
 		}
