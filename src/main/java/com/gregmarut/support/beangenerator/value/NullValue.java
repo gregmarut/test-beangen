@@ -12,40 +12,16 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.value;
 
-import java.util.Deque;
-
-import com.gregmarut.support.beangenerator.model.FieldMember;
-
 /**
  * Represents a null value
  * 
  * @author Greg Marut
  * @param <V>
  */
-public class NullValue<V> implements Value<V>
+public class NullValue<V> extends StaticValue<V>
 {
-	private final Class<V> type;
-	
 	public NullValue(final Class<V> type)
 	{
-		this.type = type;
-	}
-	
-	@Override
-	public Class<V> getType()
-	{
-		return type;
-	}
-	
-	@Override
-	public V getValue()
-	{
-		return null;
-	}
-	
-	@Override
-	public V getValue(Deque<FieldMember> fieldMemberStack)
-	{
-		return null;
+		super(null, type);
 	}
 }
