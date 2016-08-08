@@ -15,6 +15,7 @@ package com.gregmarut.support.beangenerator.config;
 import java.util.Date;
 import java.util.Map;
 
+import com.gregmarut.support.beangenerator.value.NullValue;
 import com.gregmarut.support.beangenerator.value.StaticValue;
 import com.gregmarut.support.beangenerator.value.StringValue;
 import com.gregmarut.support.beangenerator.value.Value;
@@ -55,44 +56,92 @@ public class DefaultValues extends ClassMapContainer<Value<?>>
 		put(String.class, new StringValue());
 		
 		putStaticValue(Integer.class, DEFAULT_INTEGER);
-		putStaticValue(Integer[].class, new Integer[] { DEFAULT_INTEGER });
+		putStaticValue(Integer[].class, new Integer[]
+		{
+			DEFAULT_INTEGER
+		});
 		putStaticValue(int.class, DEFAULT_INTEGER);
-		putStaticValue(int[].class, new int[] { DEFAULT_INTEGER });
+		putStaticValue(int[].class, new int[]
+		{
+			DEFAULT_INTEGER
+		});
 		
 		putStaticValue(Short.class, DEFAULT_SHORT);
-		putStaticValue(Short[].class, new Short[] { DEFAULT_SHORT });
+		putStaticValue(Short[].class, new Short[]
+		{
+			DEFAULT_SHORT
+		});
 		putStaticValue(short.class, DEFAULT_SHORT);
-		putStaticValue(short[].class, new short[] { DEFAULT_SHORT });
+		putStaticValue(short[].class, new short[]
+		{
+			DEFAULT_SHORT
+		});
 		
 		putStaticValue(Float.class, DEFAULT_FLOAT);
-		putStaticValue(Float[].class, new Float[] { DEFAULT_FLOAT });
+		putStaticValue(Float[].class, new Float[]
+		{
+			DEFAULT_FLOAT
+		});
 		putStaticValue(float.class, DEFAULT_FLOAT);
-		putStaticValue(float[].class, new float[] { DEFAULT_FLOAT });
+		putStaticValue(float[].class, new float[]
+		{
+			DEFAULT_FLOAT
+		});
 		
 		putStaticValue(Double.class, DEFAULT_DOUBLE);
-		putStaticValue(Double[].class, new Double[] { DEFAULT_DOUBLE });
+		putStaticValue(Double[].class, new Double[]
+		{
+			DEFAULT_DOUBLE
+		});
 		putStaticValue(double.class, DEFAULT_DOUBLE);
-		putStaticValue(double[].class, new double[] { DEFAULT_DOUBLE });
+		putStaticValue(double[].class, new double[]
+		{
+			DEFAULT_DOUBLE
+		});
 		
 		putStaticValue(Long.class, DEFAULT_LONG);
-		putStaticValue(Long[].class, new Long[] { DEFAULT_LONG });
+		putStaticValue(Long[].class, new Long[]
+		{
+			DEFAULT_LONG
+		});
 		putStaticValue(long.class, DEFAULT_LONG);
-		putStaticValue(long[].class, new long[] { DEFAULT_LONG });
+		putStaticValue(long[].class, new long[]
+		{
+			DEFAULT_LONG
+		});
 		
 		putStaticValue(Boolean.class, DEFAULT_BOOLEAN);
-		putStaticValue(Boolean[].class, new Boolean[] { DEFAULT_BOOLEAN });
+		putStaticValue(Boolean[].class, new Boolean[]
+		{
+			DEFAULT_BOOLEAN
+		});
 		putStaticValue(boolean.class, DEFAULT_BOOLEAN);
-		putStaticValue(boolean[].class, new boolean[] { DEFAULT_BOOLEAN });
+		putStaticValue(boolean[].class, new boolean[]
+		{
+			DEFAULT_BOOLEAN
+		});
 		
 		putStaticValue(Byte.class, DEFAULT_BYTE);
-		putStaticValue(Byte[].class, new Byte[] { DEFAULT_BYTE });
+		putStaticValue(Byte[].class, new Byte[]
+		{
+			DEFAULT_BYTE
+		});
 		putStaticValue(byte.class, DEFAULT_BYTE);
-		putStaticValue(byte[].class, new byte[] { DEFAULT_BYTE });
+		putStaticValue(byte[].class, new byte[]
+		{
+			DEFAULT_BYTE
+		});
 		
 		putStaticValue(Character.class, DEFAULT_CHARACTER);
-		putStaticValue(Character[].class, new Character[] { DEFAULT_CHARACTER });
+		putStaticValue(Character[].class, new Character[]
+		{
+			DEFAULT_CHARACTER
+		});
 		putStaticValue(char.class, DEFAULT_CHARACTER);
-		putStaticValue(char[].class, new char[] { DEFAULT_CHARACTER });
+		putStaticValue(char[].class, new char[]
+		{
+			DEFAULT_CHARACTER
+		});
 		
 		putStaticValue(Date.class, DEFAULT_DATE);
 		
@@ -110,5 +159,11 @@ public class DefaultValues extends ClassMapContainer<Value<?>>
 		
 		// create a new value object
 		put(key, new StaticValue<V>(value, (Class<V>) value.getClass()));
+	}
+	
+	public final <V> void putNullValue(final Class<V> key)
+	{
+		// create a new null value object
+		put(key, new NullValue<V>(key));
 	}
 }
