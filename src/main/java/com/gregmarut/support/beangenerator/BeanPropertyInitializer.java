@@ -629,8 +629,23 @@ public class BeanPropertyInitializer
 			}
 			catch (InstantiationException e)
 			{
-				final String message = "Failed to instantiate: " + clazz.getName();
-				logger.warn(message, e);
+				StringBuilder message = new StringBuilder();
+				message.append("Failed to instantiate \"");
+				message.append(clazz.getName());
+				message.append("\"");
+				
+				// check to see if there is a field member in the stack
+				FieldMember fieldMember = fieldMemberStack.peek();
+				if (null != fieldMember)
+				{
+					message.append(" for field \"");
+					message.append(fieldMember.getField().getName());
+					message.append("\" on declaring class \"");
+					message.append(fieldMember.getDeclaringObject().getClass().getName());
+					message.append("\"");
+				}
+				
+				logger.warn(message.toString(), e);
 				return null;
 			}
 			catch (IllegalAccessException e)
