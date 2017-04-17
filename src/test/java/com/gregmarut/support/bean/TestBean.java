@@ -26,7 +26,8 @@ import java.util.Map;
 @Ignore
 public class TestBean
 {
-	private final List<AnotherTestBean> list;
+	private final List<AnotherTestBean> finalList;
+	private List<AnotherTestBean> list;
 	
 	private String firstName;
 	private String lastName;
@@ -41,12 +42,22 @@ public class TestBean
 	
 	public TestBean()
 	{
-		this.list = new ArrayList<AnotherTestBean>();
+		this.finalList = new ArrayList<AnotherTestBean>();
+	}
+	
+	public List<AnotherTestBean> getFinalList()
+	{
+		return finalList;
 	}
 	
 	public List<AnotherTestBean> getList()
 	{
 		return list;
+	}
+	
+	public void setList(final List<AnotherTestBean> list)
+	{
+		this.list = list;
 	}
 	
 	public float getFloatData()

@@ -12,18 +12,16 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
-import static org.junit.Assert.assertEquals;
+import com.gregmarut.support.bean.TestBean;
+import com.gregmarut.support.beangenerator.config.InterfaceMapper;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.gregmarut.support.bean.TestBean;
-import com.gregmarut.support.beangenerator.BeanPropertyGenerator;
-import com.gregmarut.support.beangenerator.config.InterfaceMapper;
+import static org.junit.Assert.assertEquals;
 
 /**
  * A class to demonstrate how to use and define custom interface mappings. During bean
@@ -72,7 +70,7 @@ public class InterfaceMappingTest
 		// make sure that the list that was instantiated was actually an ArrayList because of what
 		// was
 		// defined in the InterfaceMapper object
-		assertEquals(ArrayList.class, testBean.getList().getClass());
+		assertEquals(ArrayList.class, testBean.getFinalList().getClass());
 	}
 	
 	/**
