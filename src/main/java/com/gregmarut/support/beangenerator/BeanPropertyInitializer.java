@@ -5,23 +5,12 @@
  * are made available under the terms of the GNU Public License v3.0
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/gpl.html
- * 
+ *
  * Contributors:
  *     Greg Marut - initial API and implementation
  * </pre>
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Proxy;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.gregmarut.support.beangenerator.cache.Cache;
 import com.gregmarut.support.beangenerator.cache.Retrieve;
@@ -32,12 +21,22 @@ import com.gregmarut.support.beangenerator.proxy.GeneratorInterfaceProxy;
 import com.gregmarut.support.beangenerator.rule.Rule;
 import com.gregmarut.support.util.ClassConversionUtil;
 import com.gregmarut.support.util.ReflectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.List;
 
 /**
  * This class is responsible for the actual initialization of a bean object. It uses reflection to
  * cascade an object
  * looking for all declared fields and creates a new instance of that class.
- * 
+ *
  * @author Greg Marut
  */
 public class BeanPropertyInitializer
@@ -57,7 +56,7 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Constructs a new BeanPropertyInitializer
-	 * 
+	 *
 	 * @param configuration
 	 */
 	BeanPropertyInitializer(final Configuration configuration, final Cache cache)
@@ -77,7 +76,7 @@ public class BeanPropertyInitializer
 	/**
 	 * Initializes a class and returns a new instantiated object. All fields in the new object are
 	 * also instantiated.
-	 * 
+	 *
 	 * @param clazz
 	 * @return Object
 	 * @throws InstantiationException
@@ -93,7 +92,7 @@ public class BeanPropertyInitializer
 	 * Initializes a class and returns a new instantiated object. All fields in the new object are
 	 * also instantiated
 	 * provided the populate boolean is set to true.
-	 * 
+	 *
 	 * @param clazz
 	 * @param populate
 	 * @return Object
@@ -157,7 +156,7 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Initializes an object. All fields in the new object are also instantiated.
-	 * 
+	 *
 	 * @param object
 	 * @return Object
 	 */
@@ -189,7 +188,7 @@ public class BeanPropertyInitializer
 	 * Instantiates a new instance of the class. If the class is an interface, this method will
 	 * attempt to lookup the
 	 * corresponding concrete class in the {@link InterfaceMapper}.
-	 * 
+	 *
 	 * @param clazz
 	 * @return
 	 * @throws InstantiationException
@@ -280,7 +279,7 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Fully populates an object and traverses the all of the fields recursively
-	 * 
+	 *
 	 * @param object
 	 */
 	protected final void populate(final Object object, final Deque<FieldMember> fieldMemberStack)
@@ -294,17 +293,18 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Sets the data on the object
-	 * 
+	 *
 	 * @param obj
-	 * @param setterMethods
+	 * @param fields
+	 * @param fieldMemberStack
 	 */
 	protected final void setData(final Object obj, final Field[] fields, final Deque<FieldMember> fieldMemberStack)
 	{
 		// for each of the fields in the list
 		for (Field field : fields)
 		{
-			// make sure this field is not transient and its not final
-			if (!Modifier.isTransient(field.getModifiers()) && !Modifier.isFinal(field.getModifiers()))
+			// make sure this field is not transient
+			if (!Modifier.isTransient(field.getModifiers()))
 			{
 				// get the type of this field
 				Class<?> clazz = field.getType();
@@ -313,64 +313,87 @@ public class BeanPropertyInitializer
 				FieldMember fieldMember = new FieldMember(field, obj);
 				fieldMemberStack.push(fieldMember);
 				
-				try
+				//make sure the field is not final
+				if (!Modifier.isFinal(field.getModifiers()))
 				{
-					// holds the value to set for this field
-					Object value;
-					
-					// attempt to see if a rule generated value exists for this parameter type and
-					// setter method
-					Rule<?> rule = checkForMatchingRule(obj, field, clazz);
-					
-					// check to see if a value was found based on the rules
-					if (null == rule)
+					try
 					{
-						// holds the value to set in the setter method
-						value = getValue(clazz, fieldMember, fieldMemberStack);
-					}
-					else
-					{
-						logger.debug("Rule found for \"{}\":{}", field.getName(), clazz.getName());
+						// holds the value to set for this field
+						Object value;
 						
-						// set the value to the value defined in the rule
-						value = rule.getValue().getValue(new ArrayDeque<FieldMember>(fieldMemberStack));
+						// attempt to see if a rule generated value exists for this parameter type and
+						// setter method
+						Rule<?> rule = checkForMatchingRule(obj, field, clazz);
+						
+						// check to see if a value was found based on the rules
+						if (null == rule)
+						{
+							// holds the value to set in the setter method
+							value = getValue(clazz, fieldMember, fieldMemberStack);
+						}
+						else
+						{
+							logger.debug("Rule found for \"{}\":{}", field.getName(), clazz.getName());
+							
+							// set the value to the value defined in the rule
+							value = rule.getValue().getValue(new ArrayDeque<FieldMember>(fieldMemberStack));
+						}
+						
+						// set the value on the object
+						field.setAccessible(true);
+						field.set(obj, value);
+					}
+					catch (InstantiationException e)
+					{
+						// This condition typically occurs with data types that aren't currently
+						// supported.
+						// Info log level is used here rather than Error or Warn because there are cases
+						// where we don't mind if some fields are not initialized.
+						// One type that we've seen is JAXBElement, which can't
+						// be set to generated values without more info (such as namespace).
+						// However, some other fields in the object that are not of type JAXBElement
+						// will get set, and depending on the test case, this may be fine.
+						logger.info("Could not initialize property named: {} of type: {} in object of type: {}",
+							field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
+					}
+					catch (IllegalArgumentException e)
+					{
+						logger.error(e.getMessage(), e);
+					}
+					catch (IllegalAccessException e)
+					{
+						logger.error(e.getMessage(), e);
 					}
 					
-					// set the value on the object
-					field.setAccessible(true);
-					field.set(obj, value);
+					// pop the field member off the stack
+					fieldMemberStack.pop();
 				}
-				catch (InstantiationException e)
+				// check to see if this parameter is a type of collection
+				else if (Collection.class.isAssignableFrom(clazz))
 				{
-					// This condition typically occurs with data types that aren't currently
-					// supported.
-					// Info log level is used here rather than Error or Warn because there are cases
-					// where we don't mind if some fields are not initialized.
-					// One type that we've seen is JAXBElement, which can't
-					// be set to generated values without more info (such as namespace).
-					// However, some other fields in the object that are not of type JAXBElement
-					// will get set, and depending on the test case, this may be fine.
-					logger.info("Could not intialize property named: {} of type: {} in object of type: {}",
-						field.getName(), clazz.getName(), obj.getClass().getCanonicalName());
+					try
+					{
+						//make this field accessible
+						field.setAccessible(true);
+						
+						//retrieve the collection object
+						Collection<?> collection = (Collection<?>) field.get(obj);
+						
+						//populate the collection
+						populateCollection(collection, fieldMember, fieldMemberStack);
+					}
+					catch (IllegalAccessException e)
+					{
+						logger.error(e.getMessage(), e);
+					}
 				}
-				catch (IllegalArgumentException e)
-				{
-					logger.error(e.getMessage(), e);
-				}
-				catch (IllegalAccessException e)
-				{
-					logger.error(e.getMessage(), e);
-				}
-				
-				// pop the field member off the stack
-				fieldMemberStack.pop();
 			}
 		}
 	}
 	
 	/**
 	 * Converts a parameter type to a value to be set onto the method.
-	 * 
+	 *
 	 * @param clazz
 	 * @return
 	 * @throws InstantiationException
@@ -384,9 +407,10 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Converts a parameter type to a value to be set onto the method.
-	 * 
+	 *
 	 * @param clazz
-	 * @param field
+	 * @param fieldMember
+	 * @param fieldMemberStack
 	 * @return
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
@@ -461,12 +485,13 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Searches all of the fields of a class and attempts to pick out the fields that return a
-	 * collection. For each
-	 * collection found, this method populates it with test data
-	 * 
-	 * @param fields
+	 * collection. For each	collection found, this method populates it with test data
+	 *
+	 * @param collection
+	 * @param fieldMember
+	 * @param fieldMemberStack
 	 */
-	protected final void populateCollection(final Collection<Object> collection, final FieldMember fieldMember,
+	protected final void populateCollection(final Collection collection, final FieldMember fieldMember,
 		final Deque<FieldMember> fieldMemberStack)
 	{
 		try
@@ -503,15 +528,14 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Populates a collection of objects with the given class type
-	 * 
+	 *
 	 * @param collection
 	 * @param clazz
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	protected final void populateCollection(final Collection<Object> collection, Class<?> clazz,
-		final Deque<FieldMember> fieldMemberStack)
-		throws InstantiationException, IllegalAccessException
+	protected final void populateCollection(final Collection collection, Class<?> clazz,
+		final Deque<FieldMember> fieldMemberStack) throws InstantiationException, IllegalAccessException
 	{
 		logger.debug("Populating {} with objects of type {}", collection.getClass().getName(), clazz.getName());
 		
@@ -531,12 +555,10 @@ public class BeanPropertyInitializer
 	}
 	
 	/**
-	 * Checks the {@link configuration.getRuleMapping()} to determine if there are any {@link Rule}
-	 * that match this
+	 * Checks the {@link Configuration} to determine if there are any {@link Rule} that match this
 	 * specific field name. If a match is found, the {@link Rule} is returned.
-	 * 
-	 * @param declaringObject
-	 *        the object where the field is declared
+	 *
+	 * @param declaringObject the object where the field is declared
 	 * @param field
 	 * @param clazz
 	 * @return Rule
@@ -581,7 +603,7 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Sets the configuration
-	 * 
+	 *
 	 * @param configuration
 	 */
 	public final void setConfiguration(final Configuration configuration)
@@ -596,7 +618,7 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Retrieves the configuration
-	 * 
+	 *
 	 * @return
 	 */
 	public final Configuration getConfiguration()
@@ -606,7 +628,7 @@ public class BeanPropertyInitializer
 	
 	/**
 	 * Defines a blueprint for how to retrieve an object by calling the initialize method
-	 * 
+	 *
 	 * @author Greg Marut
 	 */
 	protected class RetrieveByInitialize implements Retrieve<Object>
