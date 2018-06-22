@@ -15,7 +15,7 @@ package com.gregmarut.support.beangenerator.rule.condition;
 import java.lang.reflect.Field;
 
 /**
- * A condition for checking if a field is a member of a specific class
+ * A condition for checking if a field is a member of a specific class.
  * 
  * @author Greg Marut
  */
@@ -29,7 +29,7 @@ public class DeclaringClassCondition implements Condition
 	}
 	
 	@Override
-	public boolean isTrue(final Field field)
+	public boolean isTrue(final Field field, final Object declaringObject)
 	{
 		return field.getDeclaringClass().equals(declaringClass);
 	}

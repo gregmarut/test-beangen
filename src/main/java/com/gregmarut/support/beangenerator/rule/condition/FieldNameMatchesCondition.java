@@ -22,7 +22,7 @@ public class FieldNameMatchesCondition extends FieldNameCondition
 	}
 	
 	@Override
-	public boolean isTrue(final Field field)
+	public boolean isTrue(final Field field, final Object declaringObject)
 	{
 		// check to see if the field names match
 		return pattern.equals(field.getName());

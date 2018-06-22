@@ -91,8 +91,8 @@ public class Rule<V> implements Condition
 	}
 	
 	@Override
-	public boolean isTrue(final Field field)
+	public boolean isTrue(final Field field, final Object declaringObject)
 	{
-		return condition.isTrue(field);
+		return condition.isTrue(field, declaringObject);
 	}
 }

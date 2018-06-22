@@ -12,7 +12,9 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.rule;
 
+import com.gregmarut.support.beangenerator.rule.condition.AndCondition;
 import com.gregmarut.support.beangenerator.rule.condition.Condition;
+import com.gregmarut.support.beangenerator.rule.condition.OrCondition;
 import com.gregmarut.support.beangenerator.value.StaticValue;
 import com.gregmarut.support.beangenerator.value.Value;
 
@@ -55,7 +57,7 @@ public class RuleBuilder
 	public class RBWhen<T>
 	{
 		private final RBType<T> rbType;
-		private final Condition condition;
+		private Condition condition;
 		
 		public RBWhen(final RBType<T> rbType, final Condition condition)
 		{
@@ -67,6 +69,20 @@ public class RuleBuilder
 			
 			this.rbType = rbType;
 			this.condition = condition;
+		}
+		
+		public RBWhen<T> and(final Condition condition)
+		{
+			// wrap the existing condition and this condition with an "and" condition
+			this.condition = new AndCondition(this.condition, condition);
+			return this;
+		}
+		
+		public RBWhen<T> or(final Condition condition)
+		{
+			// wrap the existing condition and this condition with an "or" condition
+			this.condition = new OrCondition(this.condition, condition);
+			return this;
 		}
 		
 		/**

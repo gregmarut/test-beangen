@@ -22,7 +22,7 @@ public class FieldNameStartsWithCondition extends FieldNameCondition
 	}
 	
 	@Override
-	public boolean isTrue(final Field field)
+	public boolean isTrue(final Field field, final Object declaringObject)
 	{
 		// make sure the name is not null
 		if (null != field.getName())

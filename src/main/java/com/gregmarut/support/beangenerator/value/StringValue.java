@@ -12,7 +12,9 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.value;
 
-import java.lang.reflect.Field;
+import java.util.Deque;
+
+import com.gregmarut.support.beangenerator.model.FieldMember;
 
 /**
  * The default implementation for how strings are generated
@@ -34,8 +36,8 @@ public class StringValue implements Value<String>
 	}
 	
 	@Override
-	public String getValue(final Field field)
+	public String getValue(Deque<FieldMember> fieldMemberStack)
 	{
-		return field.getName();
+		return fieldMemberStack.pop().getField().getName();
 	}
 }

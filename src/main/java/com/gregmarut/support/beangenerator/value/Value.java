@@ -12,7 +12,9 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator.value;
 
-import java.lang.reflect.Field;
+import java.util.Deque;
+
+import com.gregmarut.support.beangenerator.model.FieldMember;
 
 /**
  * Adds a layer of abstraction for a value allowing for the customization for how a value is
@@ -40,9 +42,10 @@ public interface Value<T>
 	/**
 	 * Returns the generated value
 	 * 
-	 * @param field
-	 * the field that this value represents
+	 * @param fieldMemberStack
+	 *        the entire history of field members that have been created up until this point. This
+	 *        deque is a shallow copy of the original so deque modifications are allowed
 	 * @return
 	 */
-	T getValue(Field field);
+	T getValue(Deque<FieldMember> fieldMemberStack);
 }

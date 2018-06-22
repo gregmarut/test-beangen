@@ -12,6 +12,7 @@
  ******************************************************************************/
 package com.gregmarut.support.beangenerator;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import com.gregmarut.support.beangenerator.config.CacheOverride;
 import com.gregmarut.support.beangenerator.config.Configuration;
 import com.gregmarut.support.beangenerator.config.DefaultValues;
 import com.gregmarut.support.beangenerator.config.InterfaceMapper;
+import com.gregmarut.support.beangenerator.model.FieldMember;
 import com.gregmarut.support.beangenerator.rule.RuleMapping;
 
 /**
@@ -65,10 +67,13 @@ public final class BeanPropertyGenerator
 	 * Constructs a new BeanPropertyGenerator object
 	 * 
 	 * @param useCache
-	 *            Determines whether or not to cache beans once they are created for faster performance. Be advised that
-	 *            once caching is enabled, any objects that are created again within the same scope reference the
-	 *            originally created object. If the referenced object was previously modified, all consequent calls
-	 *            return the same modified object.
+	 *        Determines whether or not to cache beans once they are created for faster performance.
+	 *        Be advised that
+	 *        once caching is enabled, any objects that are created again within the same scope
+	 *        reference the
+	 *        originally created object. If the referenced object was previously modified, all
+	 *        consequent calls
+	 *        return the same modified object.
 	 */
 	public BeanPropertyGenerator(final boolean useCache)
 	{
@@ -79,13 +84,17 @@ public final class BeanPropertyGenerator
 	 * Constructs a new BeanPropertyGenerator object
 	 * 
 	 * @param useCache
-	 *            Determines whether or not to cache beans once they are created for faster performance. Be advised that
-	 *            once caching is enabled, any objects that are created again within the same scope reference the
-	 *            originally created object. If the referenced object was previously modified, all consequent calls
-	 *            return the same modified object.
+	 *        Determines whether or not to cache beans once they are created for faster performance.
+	 *        Be advised that
+	 *        once caching is enabled, any objects that are created again within the same scope
+	 *        reference the
+	 *        originally created object. If the referenced object was previously modified, all
+	 *        consequent calls
+	 *        return the same modified object.
 	 * @param proxyUnmappedInterfaces
-	 *            Determines if interfaces that have not been mapped should be instantiated using dynamic proxies. These
-	 *            proxies will then generate any objects that are returned from the interfaces
+	 *        Determines if interfaces that have not been mapped should be instantiated using
+	 *        dynamic proxies. These
+	 *        proxies will then generate any objects that are returned from the interfaces
 	 */
 	public BeanPropertyGenerator(final boolean useCache, final boolean proxyUnmappedInterfaces)
 	{
@@ -109,7 +118,7 @@ public final class BeanPropertyGenerator
 	 * Constructs a new BeanPropertyGenerator object
 	 * 
 	 * @param configuration
-	 *            Holds the configuration that will determine how this generator will function
+	 *        Holds the configuration that will determine how this generator will function
 	 */
 	public BeanPropertyGenerator(final Configuration configuration)
 	{
@@ -121,7 +130,8 @@ public final class BeanPropertyGenerator
 	}
 	
 	/**
-	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the map, it is initialized
+	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the
+	 * map, it is initialized
 	 * and returned
 	 * 
 	 * @param clazz
@@ -133,7 +143,8 @@ public final class BeanPropertyGenerator
 	}
 	
 	/**
-	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the map, it is initialized
+	 * Retrieves an object from the map of bean objects. If the object does not yet exist in the
+	 * map, it is initialized
 	 * and returned
 	 * 
 	 * @param clazz
@@ -152,7 +163,7 @@ public final class BeanPropertyGenerator
 				try
 				{
 					// attempt to initialize the new model object
-					return getBeanPropertyInitializer().initialize(clazz, populate);
+					return getBeanPropertyInitializer().initialize(clazz, populate, new ArrayDeque<FieldMember>());
 				}
 				catch (InstantiationException e)
 				{
@@ -180,7 +191,7 @@ public final class BeanPropertyGenerator
 	 * Creates a list and populates it with objects of the specified class type
 	 * 
 	 * @param clazz
-	 *            The class to instantiate
+	 *        The class to instantiate
 	 * @return
 	 */
 	public <T> List<T> getList(final Class<T> clazz)
@@ -192,9 +203,9 @@ public final class BeanPropertyGenerator
 	 * Creates a list and populates it with objects of the specified class type
 	 * 
 	 * @param clazz
-	 *            The class to instantiate
+	 *        The class to instantiate
 	 * @param count
-	 *            How many objects to put into the list
+	 *        How many objects to put into the list
 	 * @return
 	 */
 	public <T> List<T> getList(final Class<T> clazz, final int count)
@@ -223,7 +234,7 @@ public final class BeanPropertyGenerator
 	public <T> T populate(final T object)
 	{
 		// attempt to initialize the new model object
-		return (T) getBeanPropertyInitializer().initialize(object);
+		return (T) getBeanPropertyInitializer().initialize(object, new ArrayDeque<FieldMember>());
 	}
 	
 	/**
