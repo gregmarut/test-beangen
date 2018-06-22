@@ -364,9 +364,6 @@ public class BeanPropertyInitializer
 					{
 						logger.error(e.getMessage(), e);
 					}
-					
-					// pop the field member off the stack
-					fieldMemberStack.pop();
 				}
 				// check to see if this parameter is a type of collection
 				else if (Collection.class.isAssignableFrom(clazz))
@@ -387,6 +384,9 @@ public class BeanPropertyInitializer
 						logger.error(e.getMessage(), e);
 					}
 				}
+				
+				// pop the field member off the stack
+				fieldMemberStack.pop();
 			}
 		}
 	}
