@@ -24,7 +24,9 @@ import com.gregmarut.support.util.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayDeque;
@@ -263,8 +265,17 @@ public class BeanPropertyInitializer
 				// make sure this class is not literally an instance of a class
 				if (!clazz.equals(Class.class))
 				{
-					// instantiate the object
-					newObject = clazz.newInstance();
+					try
+					{
+						// instantiate the object
+						Constructor<T> constructor = clazz.getDeclaredConstructor();
+						constructor.setAccessible(true);
+						newObject = constructor.newInstance();
+					}
+					catch (InvocationTargetException | NoSuchMethodException e)
+					{
+						throw new InstantiationException(e.getMessage());
+					}
 				}
 				else
 				{
